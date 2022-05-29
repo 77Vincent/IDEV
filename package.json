@@ -1,7 +1,7 @@
 {
-    "name": "electron-quick-start",
+    "name": "IDEV",
     "version": "1.0.0",
-    "description": "A minimal Electron application",
+    "description": "A lightweight IDE in VIM mode only",
     "main": "main.js",
     "scripts": {
         "start": "electron .",

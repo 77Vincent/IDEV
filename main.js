@@ -18,44 +18,51 @@ const isMac = process.platform === 'darwin'
 
 let win
 
+const appMenu = {
+    label: app.name,
+    submenu: [
+        {
+            role: 'help',
+            accelerator:
+                isMac ? 'Alt+Cmd+I' : 'Alt+Shift+I',
+            click: () => {
+            },
+        },
+        {
+            role: isMac ? 'close' : 'quit',
+        },
+    ],
+}
+
+if (isMac) {
+    appMenu.submenu.push({ role: 'quit' })
+}
+
+const fileMenu = {
+    label: 'File',
+    submenu: [
+        {
+            label: 'Open File',
+            accelerator: isMac ? 'Cmd+O' : 'Win+O',
+            click: async () => {
+                const { filePaths } = await dialog.showOpenDialog({
+                    properties: ['openFile'],
+                })
+                const file = filePaths[0]
+                const contents = fs.readFileSync(file, 'utf8')
+                win.webContents.send('fromMain', {
+                    type: 'file',
+                    path: file,
+                    contents,
+                })
+            },
+        },
+    ],
+}
+
 const template = [
-    {
-        label: app.name,
-        submenu: [
-            {
-                role: 'help',
-                accelerator:
-                    isMac ? 'Alt+Cmd+I' : 'Alt+Shift+I',
-                click: () => {
-                },
-            },
-            {
-                role: isMac ? 'close' : 'quit',
-            },
-            {}
-        ],
-    },
-    {
-        label: 'File',
-        submenu: [
-            {
-                label: 'Open File',
-                accelerator: isMac ? 'Cmd+O' : 'Win+O',
-                click: async () => {
-                    const { filePaths } = await dialog.showOpenDialog({
-                        properties: ['openFile'],
-                    })
-                    const file = filePaths[0]
-                    const contents = fs.readFileSync(file, 'utf8')
-                    win.webContents.send('fromMain', {
-                        type: 'file',
-                        path: file,
-                        contents,
-                    })
-                },
-            },
-        ],
-    },
+    appMenu,
+    fileMenu,
 ]
 
 const menu = Menu.buildFromTemplate(template)
