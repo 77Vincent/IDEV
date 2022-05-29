@@ -12,7 +12,7 @@ const path = require('path')
 const { isDir } = require('./src/util')
 
 require('electron-reload')(__dirname, {
-    electron: path.join(__dirname, 'node_modules', '.bin', 'electron')
+    electron: path.join(__dirname, 'node_modules', '.bin', 'electron'),
 })
 
 const isMac = process.platform === 'darwin'
@@ -24,10 +24,8 @@ const appMenu = {
     submenu: [
         {
             role: 'help',
-            accelerator:
-                isMac ? 'Alt+Cmd+I' : 'Alt+Shift+I',
-            click: () => {
-            },
+            accelerator: isMac ? 'Alt+Cmd+I' : 'Alt+Shift+I',
+            click: () => {},
         },
         {
             role: isMac ? 'close' : 'quit',
@@ -63,14 +61,13 @@ const fileMenu = {
                         type = 'dir'
                         contents = []
 
-                    const files = fs.readdirSync(p)
+                        const files = fs.readdirSync(p)
 
-                      files.forEach(file => {
-                        contents.push(file)
-                      });
+                        files.forEach((file) => {
+                            contents.push(file)
+                        })
                     }
-                } catch (e) {
-                }
+                } catch (e) {}
 
                 win.webContents.send('fromMain', {
                     action: 'openFile',
@@ -78,17 +75,14 @@ const fileMenu = {
                         paths: p,
                         type,
                         contents,
-                    }
+                    },
                 })
             },
         },
     ],
 }
 
-const template = [
-    appMenu,
-    fileMenu,
-]
+const template = [appMenu, fileMenu]
 
 const menu = Menu.buildFromTemplate(template)
 Menu.setApplicationMenu(menu)
@@ -116,7 +110,7 @@ ipcMain.on('toMain', (event, args) => {
     const { action, payload } = args
     switch (action) {
         case 'openFile': {
-            const {path} = payload
+            const { path } = payload
             const contents = fs.readFileSync(path, 'utf8')
             console.log(contents)
             break

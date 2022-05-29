@@ -5,6 +5,7 @@
     "main": "main.js",
     "scripts": {
         "start": "electron .",
+        "fmt": "prettier --write .",
         "prepare": "husky install"
     },
     "repository": "https://github.com/electron/electron-quick-start",

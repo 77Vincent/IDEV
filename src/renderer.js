@@ -12,8 +12,8 @@ const explorerItem = (data = 'no data') => {
         window.api.send('toMain', {
             action: 'openFile',
             payload: {
-                path: data
-            }
+                path: data,
+            },
         })
     })
     return el
@@ -26,24 +26,27 @@ window.addEventListener('DOMContentLoaded', () => {
     const editor = CodeMirror.fromTextArea(ed, {
         mode: 'javascript',
         lineNumbers: true,
-        theme: "darcula",
+        theme: 'darcula',
         autofocus: true,
         autoCloseBrackets: true,
         matchtags: true,
         matchBrackets: true,
         indentUnit: 4,
-        keyMap: "vim",
+        keyMap: 'vim',
         extraKeys: {
-            "Cmd-/": (cm) => {
+            'Cmd-/': (cm) => {
                 cm.execCommand('toggleComment')
-            }
-        }
+            },
+        },
     })
 
     editor.setSize(null, '100%')
 
     window.api.get('fromMain', (data) => {
-        let { action, payload: { contents, type, paths } } = data
+        let {
+            action,
+            payload: { contents, type, paths },
+        } = data
 
         switch (action) {
             case 'openFile': {
@@ -54,7 +57,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
                 if (type === 'dir') {
                     $fe.empty()
-                    contents.forEach(v => {
+                    contents.forEach((v) => {
                         $fe.append(explorerItem(v))
                     })
                 }
