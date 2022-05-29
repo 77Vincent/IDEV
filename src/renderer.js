@@ -26,6 +26,8 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     })
 
+    editor.setSize(null, '100%')
+
     window.api.get('fromMain', (data) => {
         const { type, payload: { contents } } = data
 
