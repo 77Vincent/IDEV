@@ -112,6 +112,18 @@ function createWindow() {
     win.webContents.openDevTools()
 }
 
+ipcMain.on('toMain', (event, args) => {
+    const { action, payload } = args
+    switch (action) {
+        case 'openFile': {
+            const {path} = payload
+            const contents = fs.readFileSync(path, 'utf8')
+            console.log(contents)
+            break
+        }
+    }
+})
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.

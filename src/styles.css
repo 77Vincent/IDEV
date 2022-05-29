@@ -1,4 +1,11 @@
 /* styles.css */
+body {
+    font-family: monospace, Helvetica, sans-serif;
+    background-color: #555;
+    font-weight: 300;
+    color: #fff;
+}
+
 .root-wrapper {
     position: relative;
     display: flex;
@@ -10,3 +17,28 @@
     flex: 1;
 }
 
+.s-wrapper {
+    padding: 0.3em;
+}
+.m-wrapper {
+    padding: 0.6em;
+}
+.l-wrapper {
+    padding: 0.9em;
+}
+
+.file-explorer {
+}
+
+.file-explorer-item {
+    margin: 0.2em 0;
+    cursor: pointer;
+}
+
+.file-explorer-item:hover {
+    opacity: 0.8;
+}
+
+.file-explorer-item:nth-child(1) {
+    margin: 0;
+}

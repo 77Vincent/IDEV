@@ -5,9 +5,23 @@
 // selectively enable features needed in the rendering
 // process.
 
+const explorerItem = (data = 'no data') => {
+    const el = $('<div class="file-explorer-item">')
+    el.append(data)
+    el.click(() => {
+        window.api.send('toMain', {
+            action: 'openFile',
+            payload: {
+                path: data
+            }
+        })
+    })
+    return el
+}
+
 window.addEventListener('DOMContentLoaded', () => {
     const ed = document.getElementById('editor')
-    const ep = document.getElementById('file-explorer')
+    const $fe = $('#file-explorer')
 
     const editor = CodeMirror.fromTextArea(ed, {
         mode: 'javascript',
@@ -29,16 +43,22 @@ window.addEventListener('DOMContentLoaded', () => {
     editor.setSize(null, '100%')
 
     window.api.get('fromMain', (data) => {
-        const { action, payload: { contents, type } } = data
+        let { action, payload: { contents, type, paths } } = data
 
         switch (action) {
             case 'openFile': {
                 if (type === 'file') {
                     editor.setValue(contents)
+                    $fe.empty()
+                    $fe.append(explorerItem(paths))
                 }
                 if (type === 'dir') {
-                    console.log(1111111, contents)
+                    $fe.empty()
+                    contents.forEach(v => {
+                        $fe.append(explorerItem(v))
+                    })
                 }
+
                 break
             }
         }
