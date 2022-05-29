@@ -46,17 +46,14 @@ window.addEventListener('DOMContentLoaded', () => {
     window.api.get('fromMain', (data) => {
         let {
             action,
-            payload: { fromExplorer, contents, type, path },
+            payload: { contents, type, path },
         } = data
 
         switch (action) {
-            case 'openFile': {
-                if (!fromExplorer) {
-                    $fe.empty()
-                }
-
+            case 'OPEN_FILE': {
                 if (type === 'file') {
                     editor.setValue(contents)
+                    $fe.empty()
                     $fe.append(explorerItem(path))
                 }
                 if (type === 'dir') {
@@ -64,8 +61,10 @@ window.addEventListener('DOMContentLoaded', () => {
                         $fe.append(explorerItem(v))
                     })
                 }
-
                 break
+            }
+            case 'LOAD_FILE': {
+                editor.setValue(contents)
             }
         }
     })

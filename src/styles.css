@@ -27,7 +27,9 @@ body {
     padding: 0.9em;
 }
 
-.file-explorer {
+.tool-wrapper {
+    min-width: 200px;
+    background-color: #444;
 }
 
 .file-explorer-item {
@@ -37,6 +39,7 @@ body {
 
 .file-explorer-item:hover {
     opacity: 0.8;
+    background-color: #666;
 }
 
 .file-explorer-item:nth-child(1) {

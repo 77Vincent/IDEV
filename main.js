@@ -73,7 +73,7 @@ const fileMenu = {
                 } catch (e) {}
 
                 win.webContents.send('fromMain', {
-                    action: 'openFile',
+                    action: 'OPEN_FILE',
                     payload: {
                         path: p,
                         type,
@@ -115,13 +115,11 @@ ipcMain.on('toMain', (event, args) => {
         case 'openFile': {
             const { path } = payload
             const contents = fs.readFileSync(path, 'utf8')
-            console.log(contents)
+
             win.webContents.send('fromMain', {
-                action: 'openFile',
+                action: 'LOAD_FILE',
                 payload: {
-                    fromExplorer: true,
                     path,
-                    type: 'file',
                     contents,
                 },
             })
