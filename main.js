@@ -9,6 +9,7 @@ const {
 } = require('electron')
 const fs = require('fs')
 const path = require('path')
+const { isDir } = require('./src/util')
 
 require('electron-reload')(__dirname, {
     electron: path.join(__dirname, 'node_modules', '.bin', 'electron')
@@ -46,19 +47,36 @@ const fileMenu = {
             accelerator: isMac ? 'Cmd+O' : 'Win+O',
             click: async () => {
                 let contents = null
+                let type = 'file'
 
-                const { filePaths } = await dialog.showOpenDialog({
-                    properties: ['openFile'],
+                const res = await dialog.showOpenDialog({
+                    properties: ['openFile', 'openDirectory'],
                 })
 
-                if (filePaths.length === 1) {
-                    contents = fs.readFileSync(filePaths[0], 'utf8')
+                const { filePaths } = res
+                const p = filePaths[0]
+
+                try {
+                    if (!isDir(p)) {
+                        contents = fs.readFileSync(p, 'utf8')
+                    } else {
+                        type = 'dir'
+                        contents = []
+
+                    const files = fs.readdirSync(p)
+
+                      files.forEach(file => {
+                        contents.push(file)
+                      });
+                    }
+                } catch (e) {
                 }
 
                 win.webContents.send('fromMain', {
-                    type: 'openFile',
+                    action: 'openFile',
                     payload: {
-                        paths: filePaths,
+                        paths: p,
+                        type,
                         contents,
                     }
                 })

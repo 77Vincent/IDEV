@@ -29,12 +29,15 @@ window.addEventListener('DOMContentLoaded', () => {
     editor.setSize(null, '100%')
 
     window.api.get('fromMain', (data) => {
-        const { type, payload: { contents } } = data
+        const { action, payload: { contents, type } } = data
 
-        switch (type) {
+        switch (action) {
             case 'openFile': {
-                if (contents !== null) {
+                if (type === 'file') {
                     editor.setValue(contents)
+                }
+                if (type === 'dir') {
+                    console.log(1111111, contents)
                 }
                 break
             }
