@@ -27,5 +27,15 @@ window.addEventListener('DOMContentLoaded', () => {
     })
 
     window.api.get('fromMain', (data) => {
+        const { type, payload: { contents } } = data
+
+        switch (type) {
+            case 'openFile': {
+                if (contents !== null) {
+                    editor.setValue(contents)
+                }
+                break
+            }
+        }
     })
 })

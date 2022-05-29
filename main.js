@@ -45,15 +45,22 @@ const fileMenu = {
             label: 'Open File',
             accelerator: isMac ? 'Cmd+O' : 'Win+O',
             click: async () => {
+                let contents = null
+
                 const { filePaths } = await dialog.showOpenDialog({
                     properties: ['openFile'],
                 })
-                const file = filePaths[0]
-                const contents = fs.readFileSync(file, 'utf8')
+
+                if (filePaths.length === 1) {
+                    contents = fs.readFileSync(filePaths[0], 'utf8')
+                }
+
                 win.webContents.send('fromMain', {
-                    type: 'file',
-                    path: file,
-                    contents,
+                    type: 'openFile',
+                    payload: {
+                        paths: filePaths,
+                        contents,
+                    }
                 })
             },
         },
