@@ -5,14 +5,15 @@
 // selectively enable features needed in the rendering
 // process.
 
-const explorerItem = (data = 'no data') => {
+const explorerItem = (data = {}) => {
     const el = $('<div class="file-explorer-item">')
-    el.append(data)
+    const { name, path } = data
+    el.append(name)
     el.click(() => {
         window.api.send('toMain', {
             action: 'openFile',
             payload: {
-                path: data,
+                path,
             },
         })
     })
@@ -45,19 +46,21 @@ window.addEventListener('DOMContentLoaded', () => {
     window.api.get('fromMain', (data) => {
         let {
             action,
-            payload: { contents, type, paths },
+            payload: { fromExplorer, contents, type, path },
         } = data
 
         switch (action) {
             case 'openFile': {
+                if (!fromExplorer) {
+                    $fe.empty()
+                }
+
                 if (type === 'file') {
                     editor.setValue(contents)
-                    $fe.empty()
-                    $fe.append(explorerItem(paths))
+                    $fe.append(explorerItem(path))
                 }
                 if (type === 'dir') {
-                    $fe.empty()
-                    contents.forEach((v) => {
+                    contents.forEach(v => {
                         $fe.append(explorerItem(v))
                     })
                 }

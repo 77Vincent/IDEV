@@ -64,7 +64,10 @@ const fileMenu = {
                         const files = fs.readdirSync(p)
 
                         files.forEach((file) => {
-                            contents.push(file)
+                            contents.push({
+                                name: file,
+                                path: `${p}/${file}`
+                            })
                         })
                     }
                 } catch (e) {}
@@ -72,7 +75,7 @@ const fileMenu = {
                 win.webContents.send('fromMain', {
                     action: 'openFile',
                     payload: {
-                        paths: p,
+                        path: p,
                         type,
                         contents,
                     },
@@ -113,6 +116,15 @@ ipcMain.on('toMain', (event, args) => {
             const { path } = payload
             const contents = fs.readFileSync(path, 'utf8')
             console.log(contents)
+            win.webContents.send('fromMain', {
+                action: 'openFile',
+                payload: {
+                    fromExplorer: true,
+                    path,
+                    type: 'file',
+                    contents,
+                },
+            })
             break
         }
     }
