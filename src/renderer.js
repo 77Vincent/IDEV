@@ -51,20 +51,24 @@ window.addEventListener('DOMContentLoaded', () => {
 
         switch (action) {
             case 'OPEN_FILE': {
-                if (type === 'file') {
-                    editor.setValue(contents)
-                    $fe.empty()
-                    $fe.append(explorerItem(path))
-                }
-                if (type === 'dir') {
-                    contents.forEach(v => {
-                        $fe.append(explorerItem(v))
-                    })
-                }
+                editor.setValue(contents)
+                $fe.empty()
+                $fe.append(explorerItem(path, type))
+                break
+            }
+            case 'OPEN_DIR': {
+                $fe.empty()
+                contents.forEach((v) => {
+                    $fe.append(explorerItem(v, type))
+                })
                 break
             }
             case 'LOAD_FILE': {
                 editor.setValue(contents)
+                break
+            }
+            case 'LOAD_DIR': {
+                console.log(11111111, contents)
             }
         }
     })

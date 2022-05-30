@@ -1,12 +1,5 @@
 // Modules to control application life and create native browser window
-const {
-    app,
-    BrowserWindow,
-    Menu,
-    MenuItem,
-    ipcMain,
-    dialog,
-} = require('electron')
+const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron')
 const fs = require('fs')
 const path = require('path')
 const { isDir } = require('./src/util')
@@ -44,9 +37,6 @@ const fileMenu = {
             label: 'Open File',
             accelerator: isMac ? 'Cmd+O' : 'Win+O',
             click: async () => {
-                let contents = null
-                let type = 'file'
-
                 const res = await dialog.showOpenDialog({
                     properties: ['openFile', 'openDirectory'],
                 })
@@ -55,31 +45,37 @@ const fileMenu = {
                 const p = filePaths[0]
 
                 try {
-                    if (!isDir(p)) {
-                        contents = fs.readFileSync(p, 'utf8')
-                    } else {
-                        type = 'dir'
-                        contents = []
+                    if (isDir(p)) {
+                        const contents = []
 
                         const files = fs.readdirSync(p)
 
                         files.forEach((file) => {
                             contents.push({
                                 name: file,
-                                path: `${p}/${file}`
+                                path: `${p}/${file}`,
                             })
+                        })
+
+                        win.webContents.send('fromMain', {
+                            action: 'OPEN_DIR',
+                            payload: {
+                                path: p,
+                                contents,
+                            },
+                        })
+                    } else {
+                        const contents = fs.readFileSync(p, 'utf8')
+
+                        win.webContents.send('fromMain', {
+                            action: 'OPEN_FILE',
+                            payload: {
+                                path: p,
+                                contents,
+                            },
                         })
                     }
                 } catch (e) {}
-
-                win.webContents.send('fromMain', {
-                    action: 'OPEN_FILE',
-                    payload: {
-                        path: p,
-                        type,
-                        contents,
-                    },
-                })
             },
         },
     ],
@@ -114,15 +110,37 @@ ipcMain.on('toMain', (event, args) => {
     switch (action) {
         case 'openFile': {
             const { path } = payload
-            const contents = fs.readFileSync(path, 'utf8')
 
-            win.webContents.send('fromMain', {
-                action: 'LOAD_FILE',
-                payload: {
-                    path,
-                    contents,
-                },
-            })
+            if (isDir(path)) {
+                const contents = []
+                const files = fs.readdirSync(path)
+
+                files.forEach((file) => {
+                    contents.push({
+                        name: file,
+                        path: `${path}/${file}`,
+                    })
+                })
+
+                win.webContents.send('fromMain', {
+                    action: 'LOAD_DIR',
+                    payload: {
+                        path,
+                        contents,
+                    },
+                })
+            } else {
+                const contents = fs.readFileSync(path, 'utf8')
+
+                win.webContents.send('fromMain', {
+                    action: 'LOAD_FILE',
+                    payload: {
+                        path,
+                        contents,
+                    },
+                })
+            }
+
             break
         }
     }
