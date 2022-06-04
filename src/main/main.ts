@@ -81,7 +81,7 @@ const createWindow = async () => {
     },
   });
 
-  mainWindow.loadURL(resolveHtmlPath('index.html'));
+  await mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
@@ -126,12 +126,14 @@ app.on('window-all-closed', () => {
 
 app
   .whenReady()
-  .then(() => {
-    createWindow();
-    app.on('activate', () => {
+  .then(async () => {
+    await createWindow();
+    app.on('activate', async () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
-      if (mainWindow === null) createWindow();
+      if (mainWindow === null) {
+        await createWindow();
+      }
     });
   })
   .catch(console.log);

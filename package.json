@@ -63,20 +63,6 @@
     ]
   },
   "browserslist": [],
-  "prettier": {
-    "singleQuote": true,
-    "overrides": [
-      {
-        "files": [
-          ".prettierrc",
-          ".eslintrc"
-        ],
-        "options": {
-          "parser": "json"
-        }
-      }
-    ]
-  },
   "jest": {
     "moduleDirectories": [
       "node_modules",
@@ -108,9 +94,15 @@
     }
   },
   "dependencies": {
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1",
+    "@mui/material": "^5.8.2",
+    "@types/codemirror": "^5.60.5",
+    "codemirror": "^5.65.5",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.7",
     "electron-updater": "^5.0.1",
+    "normalize.css": "^8.0.1",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-router-dom": "^6.3.0"
