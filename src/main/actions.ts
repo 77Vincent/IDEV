@@ -11,7 +11,7 @@ export type ActionList = typeof OPEN_FILES | typeof OPEN_DIRS;
 
 export function openFiles(
   win: BrowserWindow,
-  payload: { path: string; content: string }[]
+  payload: { name: string; uri: string; content: string }[]
 ) {
   win.webContents.send(OPEN_FILES, payload);
 }

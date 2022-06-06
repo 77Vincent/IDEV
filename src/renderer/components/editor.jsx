@@ -17,8 +17,7 @@ export default class Editor extends React.Component {
     super(props);
     this.textareaNode = React.createRef();
     this.state = {
-      openFileSession: 0,
-      fileSessions: [],
+      content: '',
     };
   }
 
@@ -27,7 +26,6 @@ export default class Editor extends React.Component {
   // }
 
   componentDidMount() {
-    const { fileSessions, openFileSession } = this.state;
     const editor = CodeMirror.fromTextArea(this.textareaNode, {
       mode: 'javascript',
       lineNumbers: true,
@@ -46,14 +44,11 @@ export default class Editor extends React.Component {
     });
     window.electron.ipcRenderer.on('OPEN_FILES', (args) => {
       const { content } = args[0];
-      this.setState({
-        openFileSession: fileSessions.length,
-        fileSessions: fileSessions.concat(args),
-      });
+      this.setState({ content });
       editor.setValue(content);
     });
 
-    editor.setValue(fileSessions[openFileSession] || '');
+    editor.setValue(this.state.content);
     editor.setSize('100%', '100%');
   }
 

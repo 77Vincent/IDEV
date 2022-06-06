@@ -7,6 +7,7 @@ import {
   MenuItemConstructorOptions,
 } from 'electron';
 import { readdirSync, readFileSync } from 'fs';
+import { basename } from 'path';
 
 import { isDir } from './util';
 import { openDirs, openFiles } from './actions';
@@ -113,7 +114,8 @@ export default class MenuBuilder {
                 const content = readFileSync(p, 'utf-8');
                 openFiles(win, [
                   {
-                    path: p,
+                    name: basename(p),
+                    uri: p,
                     content,
                   },
                 ]);
