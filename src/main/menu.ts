@@ -2,9 +2,14 @@ import {
   app,
   Menu,
   shell,
+  dialog,
   BrowserWindow,
   MenuItemConstructorOptions,
 } from 'electron';
+import { readdirSync, readFileSync } from 'fs';
+
+import { isDir } from './util';
+import { openDirs, openFiles } from './actions';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -28,7 +33,7 @@ export default class MenuBuilder {
 
     const template =
       process.platform === 'darwin'
-        ? this.buildDarwinTemplate()
+        ? this.buildDarwinTemplate(this.mainWindow)
         : this.buildDefaultTemplate();
 
     const menu = Menu.buildFromTemplate(template);
@@ -52,19 +57,19 @@ export default class MenuBuilder {
     });
   }
 
-  buildDarwinTemplate(): MenuItemConstructorOptions[] {
+  buildDarwinTemplate(win: BrowserWindow): MenuItemConstructorOptions[] {
     const subMenuAbout: DarwinMenuItemConstructorOptions = {
-      label: 'Electron',
+      label: 'Vimer',
       submenu: [
         {
-          label: 'About ElectronReact',
+          label: 'About Vimer',
           selector: 'orderFrontStandardAboutPanel:',
         },
         { type: 'separator' },
         { label: 'Services', submenu: [] },
         { type: 'separator' },
         {
-          label: 'Hide ElectronReact',
+          label: 'Hide Vimer',
           accelerator: 'Command+H',
           selector: 'hide:',
         },
@@ -81,6 +86,43 @@ export default class MenuBuilder {
           click: () => {
             app.quit();
           },
+        },
+      ],
+    };
+    const subMenuFile: DarwinMenuItemConstructorOptions = {
+      label: 'File',
+      submenu: [
+        {
+          label: 'Open',
+          accelerator: 'Command+O',
+          click: async () => {
+            const res = await dialog.showOpenDialog({
+              properties: ['openFile', 'openDirectory'],
+            });
+            const { filePaths } = res;
+            const p = filePaths[0];
+            try {
+              if (isDir(p)) {
+                const children = readdirSync(p);
+                const payload = children.map((v) => ({
+                  name: v,
+                  pwd: p,
+                }));
+                openDirs(win, payload);
+              } else {
+                const content = readFileSync(p, 'utf-8');
+                openFiles(win, [
+                  {
+                    path: p,
+                    content,
+                  },
+                ]);
+              }
+            } catch (e) {
+              console.log(77777777, e);
+            }
+          },
+          selector: '',
         },
       ],
     };
@@ -189,7 +231,14 @@ export default class MenuBuilder {
         ? subMenuViewDev
         : subMenuViewProd;
 
-    return [subMenuAbout, subMenuEdit, subMenuView, subMenuWindow, subMenuHelp];
+    return [
+      subMenuAbout,
+      subMenuFile,
+      subMenuEdit,
+      subMenuView,
+      subMenuWindow,
+      subMenuHelp,
+    ];
   }
 
   buildDefaultTemplate() {

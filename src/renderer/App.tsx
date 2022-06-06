@@ -3,6 +3,7 @@ import 'normalize.css';
 import { Box } from '@mui/material';
 
 import Editor from './components/editor';
+import Tabs from './components/tabs';
 // import icon from '../../assets/icon.svg';
 import './App.css';
 
@@ -11,7 +12,7 @@ const Hello = () => {
     <>
       <Box flexDirection="column" height="100vh" display="flex">
         <Box>
-          <div>tabs</div>
+          <Tabs />
         </Box>
 
         <Box flex={1}>

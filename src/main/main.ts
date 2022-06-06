@@ -12,6 +12,8 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import storage from 'electron-json-storage';
+
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -23,7 +25,10 @@ export default class AppUpdater {
   }
 }
 
-let mainWindow: BrowserWindow | null = null;
+storage.setDataPath(path.join(__dirname, './.idev'));
+
+// eslint-disable-next-line import/no-mutable-exports
+export let mainWindow: BrowserWindow | null = null;
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;

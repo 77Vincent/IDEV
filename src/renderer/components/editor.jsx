@@ -1,6 +1,5 @@
 import * as React from 'react';
 import CodeMirror from 'codemirror';
-import { Box } from '@mui/material';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/edit/closebrackets';
 import 'codemirror/addon/edit/matchbrackets';
@@ -11,13 +10,24 @@ import 'codemirror/theme/darcula.css';
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/keymap/vim';
 
+// import { OPEN_FILES } from '../../main/actions';
+
 export default class Editor extends React.Component {
   constructor(props) {
     super(props);
     this.textareaNode = React.createRef();
+    this.state = {
+      openFileSession: 0,
+      fileSessions: [],
+    };
   }
 
+  // componentDidUpdate(prevProps, prevState, snapshot) {
+  //   console.log(11111111, prevState);
+  // }
+
   componentDidMount() {
+    const { fileSessions, openFileSession } = this.state;
     const editor = CodeMirror.fromTextArea(this.textareaNode, {
       mode: 'javascript',
       lineNumbers: true,
@@ -34,6 +44,16 @@ export default class Editor extends React.Component {
         },
       },
     });
+    window.electron.ipcRenderer.on('OPEN_FILES', (args) => {
+      const { content } = args[0];
+      this.setState({
+        openFileSession: fileSessions.length,
+        fileSessions: fileSessions.concat(args),
+      });
+      editor.setValue(content);
+    });
+
+    editor.setValue(fileSessions[openFileSession] || '');
     editor.setSize('100%', '100%');
   }
 

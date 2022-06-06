@@ -1,4 +1,5 @@
 /* eslint import/prefer-default-export: off, import/no-mutable-exports: off */
+import fs from 'fs';
 import { URL } from 'url';
 import path from 'path';
 
@@ -15,4 +16,8 @@ if (process.env.NODE_ENV === 'development') {
   resolveHtmlPath = (htmlFileName: string) => {
     return `file://${path.resolve(__dirname, '../renderer/', htmlFileName)}`;
   };
+}
+
+export function isDir(file: string) {
+  return fs.lstatSync(file).isDirectory();
 }
