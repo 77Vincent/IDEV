@@ -21,10 +21,6 @@ export default class Editor extends React.Component {
     };
   }
 
-  // componentDidUpdate(prevProps, prevState, snapshot) {
-  //   console.log(11111111, prevState);
-  // }
-
   componentDidMount() {
     const editor = CodeMirror.fromTextArea(this.textareaNode, {
       mode: 'javascript',
@@ -42,14 +38,21 @@ export default class Editor extends React.Component {
         },
       },
     });
+
+    editor.setValue(this.state.content);
+    editor.setSize('100%', '100%');
+
     window.electron.ipcRenderer.on('OPEN_FILES', (args) => {
       const { content } = args[0];
       this.setState({ content });
       editor.setValue(content);
     });
 
-    editor.setValue(this.state.content);
-    editor.setSize('100%', '100%');
+    window.electron.ipcRenderer.on('EDITOR_LOAD_FILE', (args) => {
+      const { content } = args[0];
+      this.setState({ content });
+      editor.setValue(content);
+    });
   }
 
   render() {

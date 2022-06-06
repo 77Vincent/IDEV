@@ -10,7 +10,7 @@ import { readdirSync, readFileSync } from 'fs';
 import { basename } from 'path';
 
 import { isDir } from './util';
-import { openDirs, openFiles } from './actions';
+import { notify, openDirs, openFiles } from './actions';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -121,7 +121,10 @@ export default class MenuBuilder {
                 ]);
               }
             } catch (e) {
-              console.log(77777777, e);
+              notify(win, {
+                code: 1,
+                message: 'demo',
+              });
             }
           },
           selector: '',

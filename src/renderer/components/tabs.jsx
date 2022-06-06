@@ -1,5 +1,13 @@
-import { Box } from '@mui/material';
+import { Box, styled, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+
+const ActiveTab = styled('div')(({ theme }) => {
+  return {
+    borderBottomColor: theme.palette.primary.main,
+    borderBottomWidth: 3,
+    borderBottomStyle: 'solid',
+  };
+});
 
 export default () => {
   const [openFileSession, setOpenFileSession] = useState('');
@@ -15,10 +23,36 @@ export default () => {
     });
   }, []);
 
+  const Tab = ({ name, uri }) => {
+    return (
+      <Box
+        onClick={() => {
+          setOpenFileSession(uri);
+          window.electron.ipcRenderer.send('LOAD_FILE', [uri]);
+        }}
+        paddingLeft={1}
+        paddingRight={1}
+      >
+        <Typography variant="body2">{name}</Typography>
+      </Box>
+    );
+  };
+
   return (
-    <Box>
+    <Box display="flex">
       {Object.keys(fileSessions).map((key) => {
-        return <div key={key}>{fileSessions[key]}</div>;
+        const file = fileSessions[key];
+        return (
+          <div key={key}>
+            {openFileSession === key ? (
+              <ActiveTab>
+                <Tab uri={key} name={file} />
+              </ActiveTab>
+            ) : (
+              <Tab uri={key} name={file} />
+            )}
+          </div>
+        );
       })}
     </Box>
   );
