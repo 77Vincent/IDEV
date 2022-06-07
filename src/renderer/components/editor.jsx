@@ -8,6 +8,7 @@ import 'codemirror/addon/edit/closetag';
 import 'codemirror/addon/edit/matchtags';
 import 'codemirror/addon/comment/comment';
 import 'codemirror/mode/javascript/javascript';
+// import 'codemirror/mode/overlay';
 import 'codemirror/keymap/vim';
 
 import '../theme/editor-dark.css';
@@ -32,6 +33,7 @@ export default class Editor extends React.Component {
       matchBrackets: true,
       indentUnit: 4,
       keyMap: 'vim',
+      cursorScrollMargin: 24,
       extraKeys: {
         'Cmd-/': (cm) => {
           cm.execCommand('toggleComment');
@@ -43,7 +45,7 @@ export default class Editor extends React.Component {
     editor.setSize('100%', '100%');
 
     window.electron.ipcRenderer.on('EDITOR_LOAD_FILE', (args) => {
-      const { content } = args[0];
+      const { content } = args;
       this.setState({ content });
       editor.setValue(content);
     });

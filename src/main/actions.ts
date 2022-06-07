@@ -2,7 +2,10 @@ import storage from 'electron-json-storage';
 import { join } from 'path';
 import { BrowserWindow } from 'electron';
 
-export const RENDERER_OPEN_FILE = 'RENDERER_OPEN_FILE';
+export const RENDERER_UPDATE_FILE_SESSIONS = 'RENDERER_UPDATE_FILE_SESSIONS';
+export const RENDERER_UPDATE_OPEN_FILE_SESSION =
+  'RENDERER_UPDATE_OPEN_FILE_SESSION';
+export const RENDERER_RELOAD = 'RENDERER_RELOAD';
 export const EDITOR_LOAD_FILE = 'EDITOR_LOAD_FILE';
 export const OPEN_DIRS = 'OPEN_DIRS';
 export const NOTIFY = 'NOTIFY';
@@ -11,7 +14,8 @@ storage.setDataPath(join(__dirname, './.vimer'));
 
 export type ActionList =
   | typeof EDITOR_LOAD_FILE
-  | typeof RENDERER_OPEN_FILE
+  | typeof RENDERER_UPDATE_FILE_SESSIONS
+  | typeof RENDERER_RELOAD
   | typeof OPEN_DIRS;
 
 export function notify(
@@ -23,10 +27,11 @@ export function notify(
 
 export function openFiles(
   win: BrowserWindow,
-  payload: { name: string; uri: string; content: string }[]
+  payload: { name: string; uri: string; content: string }
 ) {
-  const { name, uri, content } = payload[0];
+  const { name, uri, content } = payload;
   const fileSessions = storage.getSync('fileSessions');
+  // set all file sessions
   storage.set(
     'fileSessions',
     Object.assign(fileSessions, {
@@ -41,7 +46,15 @@ export function openFiles(
       }
     }
   );
-  win.webContents.send(RENDERER_OPEN_FILE, payload);
+  // set open file session
+  storage.set('openFileSession', { uri }, (e) => {
+    if (e) {
+      throw e;
+    }
+  });
+  // inform renderer
+  win.webContents.send(RENDERER_UPDATE_FILE_SESSIONS, payload);
+  win.webContents.send(RENDERER_UPDATE_OPEN_FILE_SESSION, uri);
   win.webContents.send(EDITOR_LOAD_FILE, payload);
 }
 

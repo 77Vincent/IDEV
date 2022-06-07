@@ -26,7 +26,9 @@ export default class AppUpdater {
   }
 }
 
-storage.setDataPath(path.join(__dirname, './.idev'));
+const GLOBAL_TEMP_STORAGE = '.global-temp-storage';
+
+storage.setDataPath(path.join(app.getPath('userData'), GLOBAL_TEMP_STORAGE));
 
 // eslint-disable-next-line import/no-mutable-exports
 export let mainWindow: BrowserWindow | null = null;

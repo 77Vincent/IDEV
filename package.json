@@ -1,5 +1,6 @@
 {
   "description": "A foundation for scalable desktop apps",
+  "name": "vimer",
   "keywords": [
     "electron",
     "boilerplate",
@@ -21,8 +22,8 @@
   },
   "license": "MIT",
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
+    "name": "Vincent WEN",
+    "email": "wentianqi77@outlook.com",
     "url": "https://electron-react-boilerplate.js.org"
   },
   "contributors": [

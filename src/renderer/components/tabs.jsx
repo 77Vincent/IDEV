@@ -36,13 +36,18 @@ export default () => {
   const [fileSessions, setFileSessions] = useState({});
 
   useEffect(() => {
-    window.electron.ipcRenderer.on('RENDERER_OPEN_FILE', (args) => {
-      const { name, uri } = args[0];
+    window.electron.ipcRenderer.on('RENDERER_UPDATE_FILE_SESSIONS', (args) => {
+      const { name, uri } = args;
       setFileSessions((prevState) => {
         return Object.assign(prevState, { [uri]: name });
       });
-      setOpenFileSession(uri);
     });
+    window.electron.ipcRenderer.on(
+      'RENDERER_UPDATE_OPEN_FILE_SESSION',
+      (uri) => {
+        setOpenFileSession(String(uri));
+      }
+    );
   }, []);
 
   const Tab = ({ name, uri }) => {
@@ -58,7 +63,7 @@ export default () => {
           paddingRight={1}
           onClick={() => {
             setOpenFileSession(uri);
-            window.electron.ipcRenderer.send('MAIN_LOAD_FILE', [uri]);
+            window.electron.ipcRenderer.send('MAIN_LOAD_FILE', uri);
           }}
         >
           <Typography variant="body2">{name}</Typography>

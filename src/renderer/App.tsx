@@ -8,6 +8,7 @@ import Editor from './components/editor';
 import Tabs from './components/tabs';
 // import icon from '../../assets/icon.svg';
 import './App.css';
+import { useEffect } from 'react';
 
 const theme = createTheme({
   palette: {
@@ -21,6 +22,10 @@ const theme = createTheme({
 });
 
 const Hello = () => {
+  useEffect(() => {
+    window.electron.ipcRenderer.send('RENDERER_RELOAD', {});
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <Box

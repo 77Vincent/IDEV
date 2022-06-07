@@ -112,13 +112,11 @@ export default class MenuBuilder {
                 openDirs(win, payload);
               } else {
                 const content = readFileSync(p, 'utf-8');
-                openFiles(win, [
-                  {
-                    name: basename(p),
-                    uri: p,
-                    content,
-                  },
-                ]);
+                openFiles(win, {
+                  name: basename(p),
+                  uri: p,
+                  content,
+                });
               }
             } catch (e) {
               notify(win, {

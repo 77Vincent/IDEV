@@ -5,12 +5,12 @@ export type Channels = 'ipc-example' | ActionList;
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
-    send(channel: Channels, args: unknown[]) {
+    send(channel: Channels, args: object) {
       ipcRenderer.send(channel, args);
     },
-    on(channel: Channels, func: (...args: unknown[]) => void) {
-      const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>
-        func(...args);
+    on(channel: Channels, func: (args: object) => void) {
+      const subscription = (_event: IpcRendererEvent, args: object) =>
+        func(args);
       ipcRenderer.on(channel, subscription);
 
       return () => ipcRenderer.removeListener(channel, subscription);
