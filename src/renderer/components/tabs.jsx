@@ -63,7 +63,7 @@ export default () => {
           paddingRight={1}
           onClick={() => {
             setOpenFileSession(uri);
-            window.electron.ipcRenderer.send('MAIN_LOAD_FILE', uri);
+            window.electron.ipcRenderer.send('MAIN_LOAD_FILE', { uri });
           }}
         >
           <Typography variant="body2">{name}</Typography>

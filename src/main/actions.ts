@@ -6,7 +6,9 @@ export const RENDERER_UPDATE_FILE_SESSIONS = 'RENDERER_UPDATE_FILE_SESSIONS';
 export const RENDERER_UPDATE_OPEN_FILE_SESSION =
   'RENDERER_UPDATE_OPEN_FILE_SESSION';
 export const RENDERER_RELOAD = 'RENDERER_RELOAD';
+export const RENDERER_GET_FILE_CONTENT = 'RENDERER_GET_FILE_CONTENT';
 export const EDITOR_LOAD_FILE = 'EDITOR_LOAD_FILE';
+export const MAIN_SAVE_FILE = 'MAIN_SAVE_FILE';
 export const OPEN_DIRS = 'OPEN_DIRS';
 export const NOTIFY = 'NOTIFY';
 
@@ -16,6 +18,8 @@ export type ActionList =
   | typeof EDITOR_LOAD_FILE
   | typeof RENDERER_UPDATE_FILE_SESSIONS
   | typeof RENDERER_RELOAD
+  | typeof RENDERER_GET_FILE_CONTENT
+  | typeof MAIN_SAVE_FILE
   | typeof OPEN_DIRS;
 
 export function notify(
@@ -23,6 +27,10 @@ export function notify(
   payload: { code: number; message: string }
 ) {
   win.webContents.send(NOTIFY, payload);
+}
+
+export function getFileContent(win: BrowserWindow) {
+  win.webContents.send(RENDERER_GET_FILE_CONTENT);
 }
 
 export function openFiles(

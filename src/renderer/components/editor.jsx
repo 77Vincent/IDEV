@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Box } from '@mui/material';
 import CodeMirror from 'codemirror';
-import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/edit/closebrackets';
 import 'codemirror/addon/edit/matchbrackets';
 import 'codemirror/addon/edit/closetag';
@@ -9,9 +8,8 @@ import 'codemirror/addon/edit/matchtags';
 import 'codemirror/addon/comment/comment';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/jsx/jsx';
-// import 'codemirror/mode/overlay';
 import 'codemirror/keymap/vim';
-
+import '../theme/codemirror.css';
 import '../theme/editor-dark.css';
 
 export default class Editor extends React.Component {
@@ -49,6 +47,11 @@ export default class Editor extends React.Component {
       const { content } = args;
       this.setState({ content });
       editor.setValue(content);
+    });
+
+    window.electron.ipcRenderer.on('RENDERER_GET_FILE_CONTENT', () => {
+      const content = editor.getValue();
+      window.electron.ipcRenderer.send('MAIN_SAVE_FILE', { content });
     });
   }
 

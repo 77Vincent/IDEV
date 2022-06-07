@@ -3,12 +3,12 @@ import 'normalize.css';
 import { Box, ThemeProvider } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 import { green } from '@mui/material/colors';
+import { useEffect } from 'react';
 
 import Editor from './components/editor';
 import Tabs from './components/tabs';
 // import icon from '../../assets/icon.svg';
 import './App.css';
-import { useEffect } from 'react';
 
 const theme = createTheme({
   palette: {

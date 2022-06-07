@@ -6,11 +6,12 @@ import {
   BrowserWindow,
   MenuItemConstructorOptions,
 } from 'electron';
-import { readdirSync, readFileSync } from 'fs';
+import { writeFileSync, readdirSync, readFileSync } from 'fs';
 import { basename } from 'path';
+import storage from 'electron-json-storage';
 
 import { isDir } from './util';
-import { notify, openDirs, openFiles } from './actions';
+import { getFileContent, notify, openDirs, openFiles } from './actions';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -126,6 +127,15 @@ export default class MenuBuilder {
             }
           },
           selector: '',
+        },
+
+        {
+          label: 'Save',
+          accelerator: 'Command+S',
+          selector: 'save:',
+          click() {
+            getFileContent(win);
+          },
         },
       ],
     };
