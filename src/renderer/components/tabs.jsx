@@ -3,9 +3,16 @@ import { useEffect, useState } from 'react';
 
 const ActiveTab = styled('div')(({ theme }) => {
   return {
-    borderBottomColor: theme.palette.primary.main,
-    borderBottomWidth: 3,
-    borderBottomStyle: 'solid',
+    backgroundColor: theme.palette.common.black,
+  };
+});
+
+const StyledTab = styled('div')(({ theme }) => {
+  return {
+    '&:hover': {
+      backgroundColor: theme.palette.grey.A700,
+    },
+    cursor: 'pointer',
   };
 });
 
@@ -25,16 +32,21 @@ export default () => {
 
   const Tab = ({ name, uri }) => {
     return (
-      <Box
-        onClick={() => {
-          setOpenFileSession(uri);
-          window.electron.ipcRenderer.send('MAIN_LOAD_FILE', [uri]);
-        }}
-        paddingLeft={1}
-        paddingRight={1}
-      >
-        <Typography variant="body2">{name}</Typography>
-      </Box>
+      <StyledTab>
+        <Box
+          height={24}
+          display="flex"
+          onClick={() => {
+            setOpenFileSession(uri);
+            window.electron.ipcRenderer.send('MAIN_LOAD_FILE', [uri]);
+          }}
+          alignItems="center"
+          paddingLeft={1}
+          paddingRight={1}
+        >
+          <Typography variant="body2">{name}</Typography>
+        </Box>
+      </StyledTab>
     );
   };
 

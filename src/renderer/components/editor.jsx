@@ -6,11 +6,10 @@ import 'codemirror/addon/edit/matchbrackets';
 import 'codemirror/addon/edit/closetag';
 import 'codemirror/addon/edit/matchtags';
 import 'codemirror/addon/comment/comment';
-import 'codemirror/theme/darcula.css';
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/keymap/vim';
 
-// import { OPEN_FILES } from '../../main/actions';
+import '../theme/editor.css';
 
 export default class Editor extends React.Component {
   constructor(props) {
