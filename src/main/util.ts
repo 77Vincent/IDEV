@@ -21,3 +21,7 @@ if (process.env.NODE_ENV === 'development') {
 export function isDir(file: string) {
   return fs.lstatSync(file).isDirectory();
 }
+
+export function isDarwin() {
+  return process.platform === 'darwin';
+}

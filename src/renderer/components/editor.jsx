@@ -7,7 +7,8 @@ import 'codemirror/addon/edit/matchbrackets';
 import 'codemirror/addon/edit/closetag';
 import 'codemirror/addon/edit/matchtags';
 import 'codemirror/addon/comment/comment';
-import 'codemirror/mode/javascript/javascript';
+import 'codemirror/addon/selection/active-line';
+import 'codemirror/mode/jsx/jsx';
 // import 'codemirror/mode/overlay';
 import 'codemirror/keymap/vim';
 
@@ -24,16 +25,16 @@ export default class Editor extends React.Component {
 
   componentDidMount() {
     const editor = CodeMirror.fromTextArea(this.textareaNode, {
-      mode: 'javascript',
+      mode: 'jsx',
       lineNumbers: true,
       theme: 'darcula',
       autofocus: true,
       autoCloseBrackets: true,
       matchtags: true,
       matchBrackets: true,
-      indentUnit: 4,
       keyMap: 'vim',
       cursorScrollMargin: 24,
+      styleActiveLine: true,
       extraKeys: {
         'Cmd-/': (cm) => {
           cm.execCommand('toggleComment');

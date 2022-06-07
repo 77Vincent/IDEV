@@ -15,7 +15,7 @@ import log from 'electron-log';
 import storage from 'electron-json-storage';
 
 import MenuBuilder from './menu';
-import { resolveHtmlPath } from './util';
+import { isDarwin, resolveHtmlPath } from './util';
 import './reducer';
 
 export default class AppUpdater {
@@ -73,8 +73,8 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1024,
-    height: 728,
+    width: 1200,
+    height: 800,
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: app.isPackaged
@@ -97,6 +97,10 @@ const createWindow = async () => {
   });
 
   mainWindow.on('closed', () => {
+    // if (isDarwin()) {
+    //   console.log(33333333333333, mainWindow);
+    //   mainWindow?.hide();
+    // }
     mainWindow = null;
   });
 
@@ -121,7 +125,7 @@ const createWindow = async () => {
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
-  if (process.platform !== 'darwin') {
+  if (!isDarwin()) {
     app.quit();
   }
 });
