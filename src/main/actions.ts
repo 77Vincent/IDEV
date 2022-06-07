@@ -62,7 +62,7 @@ export function openFiles(
   });
   // inform renderer
   win.webContents.send(RENDERER_UPDATE_FILE_SESSIONS, payload);
-  win.webContents.send(RENDERER_UPDATE_OPEN_FILE_SESSION, uri);
+  win.webContents.send(RENDERER_UPDATE_OPEN_FILE_SESSION, { uri });
   win.webContents.send(EDITOR_LOAD_FILE, payload);
 }
 

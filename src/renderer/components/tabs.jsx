@@ -7,8 +7,8 @@ const Wrapper = styled('div')(({ theme }) => {
     borderBottomStyle: 'solid',
     borderBottomColor: theme.palette.grey[800],
     width: '100%',
-    backgroundColor: 'rgba(50,50,50,0.5)',
-    backdropFilter: 'blur(20px)',
+    backgroundColor: 'rgba(50,50,50,0.3)',
+    backdropFilter: 'blur(15px)',
     zIndex: 1,
     position: 'absolute',
     height: 24,
@@ -42,9 +42,14 @@ export default () => {
         return Object.assign(prevState, { [uri]: name });
       });
     });
+
+    window.electron.ipcRenderer.on(
+      'RENDERER_REFRESH_FILE_SESSIONS',
+      (args) => {}
+    );
     window.electron.ipcRenderer.on(
       'RENDERER_UPDATE_OPEN_FILE_SESSION',
-      (uri) => {
+      ({ uri }) => {
         setOpenFileSession(String(uri));
       }
     );
