@@ -42,12 +42,6 @@ export default class Editor extends React.Component {
     editor.setValue(this.state.content);
     editor.setSize('100%', '100%');
 
-    window.electron.ipcRenderer.on('OPEN_FILES', (args) => {
-      const { content } = args[0];
-      this.setState({ content });
-      editor.setValue(content);
-    });
-
     window.electron.ipcRenderer.on('EDITOR_LOAD_FILE', (args) => {
       const { content } = args[0];
       this.setState({ content });

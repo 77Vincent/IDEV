@@ -2,13 +2,17 @@ import storage from 'electron-json-storage';
 import { join } from 'path';
 import { BrowserWindow } from 'electron';
 
-export const OPEN_FILES = 'OPEN_FILES';
+export const RENDERER_OPEN_FILE = 'RENDERER_OPEN_FILE';
+export const EDITOR_LOAD_FILE = 'EDITOR_LOAD_FILE';
 export const OPEN_DIRS = 'OPEN_DIRS';
 export const NOTIFY = 'NOTIFY';
 
 storage.setDataPath(join(__dirname, './.vimer'));
 
-export type ActionList = typeof OPEN_FILES | typeof OPEN_DIRS;
+export type ActionList =
+  | typeof EDITOR_LOAD_FILE
+  | typeof RENDERER_OPEN_FILE
+  | typeof OPEN_DIRS;
 
 export function notify(
   win: BrowserWindow,
@@ -37,7 +41,8 @@ export function openFiles(
       }
     }
   );
-  win.webContents.send(OPEN_FILES, payload);
+  win.webContents.send(RENDERER_OPEN_FILE, payload);
+  win.webContents.send(EDITOR_LOAD_FILE, payload);
 }
 
 export function openDirs(

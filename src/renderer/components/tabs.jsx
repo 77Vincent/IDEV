@@ -14,7 +14,7 @@ export default () => {
   const [fileSessions, setFileSessions] = useState({});
 
   useEffect(() => {
-    window.electron.ipcRenderer.on('OPEN_FILES', (args) => {
+    window.electron.ipcRenderer.on('RENDERER_OPEN_FILE', (args) => {
       const { name, uri } = args[0];
       setFileSessions((prevState) => {
         return Object.assign(prevState, { [uri]: name });
@@ -28,7 +28,7 @@ export default () => {
       <Box
         onClick={() => {
           setOpenFileSession(uri);
-          window.electron.ipcRenderer.send('LOAD_FILE', [uri]);
+          window.electron.ipcRenderer.send('MAIN_LOAD_FILE', [uri]);
         }}
         paddingLeft={1}
         paddingRight={1}
