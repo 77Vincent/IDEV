@@ -1,16 +1,31 @@
 import { Box, styled, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 
+const Wrapper = styled('div')(({ theme }) => {
+  return {
+    borderBottomWidth: 1,
+    borderBottomStyle: 'solid',
+    borderBottomColor: theme.palette.grey[800],
+    width: '100%',
+    backgroundColor: 'rgba(50,50,50,0.5)',
+    backdropFilter: 'blur(20px)',
+    zIndex: 1,
+    position: 'absolute',
+    height: 24,
+  };
+});
+
 const ActiveTab = styled('div')(({ theme }) => {
   return {
-    backgroundColor: theme.palette.common.black,
+    backgroundColor: theme.palette.grey[600],
+    color: theme.palette.common.white,
   };
 });
 
 const StyledTab = styled('div')(({ theme }) => {
   return {
     '&:hover': {
-      backgroundColor: theme.palette.grey.A700,
+      backgroundColor: theme.palette.grey[800],
     },
     cursor: 'pointer',
   };
@@ -35,14 +50,16 @@ export default () => {
       <StyledTab>
         <Box
           height={24}
+          minWidth={75}
           display="flex"
+          justifyContent="center"
+          alignItems="center"
+          paddingLeft={1}
+          paddingRight={1}
           onClick={() => {
             setOpenFileSession(uri);
             window.electron.ipcRenderer.send('MAIN_LOAD_FILE', [uri]);
           }}
-          alignItems="center"
-          paddingLeft={1}
-          paddingRight={1}
         >
           <Typography variant="body2">{name}</Typography>
         </Box>
@@ -51,21 +68,23 @@ export default () => {
   };
 
   return (
-    <Box display="flex">
-      {Object.keys(fileSessions).map((key) => {
-        const file = fileSessions[key];
-        return (
-          <div key={key}>
-            {openFileSession === key ? (
-              <ActiveTab>
+    <Wrapper>
+      <Box display="flex">
+        {Object.keys(fileSessions).map((key) => {
+          const file = fileSessions[key];
+          return (
+            <Box key={key}>
+              {openFileSession === key ? (
+                <ActiveTab>
+                  <Tab uri={key} name={file} />
+                </ActiveTab>
+              ) : (
                 <Tab uri={key} name={file} />
-              </ActiveTab>
-            ) : (
-              <Tab uri={key} name={file} />
-            )}
-          </div>
-        );
-      })}
-    </Box>
+              )}
+            </Box>
+          );
+        })}
+      </Box>
+    </Wrapper>
   );
 };

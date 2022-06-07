@@ -29,12 +29,8 @@ const Hello = () => {
         height="100vh"
         display="flex"
       >
-        <Box zIndex={1} position="absolute" width="100%" height={24}>
-          <Tabs />
-        </Box>
-        <Box overflow="auto" marginTop={3} flex={1}>
-          <Editor />
-        </Box>
+        <Tabs />
+        <Editor />
       </Box>
     </ThemeProvider>
   );

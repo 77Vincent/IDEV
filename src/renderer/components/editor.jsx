@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Box } from '@mui/material';
 import CodeMirror from 'codemirror';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/edit/closebrackets';
@@ -9,7 +10,7 @@ import 'codemirror/addon/comment/comment';
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/keymap/vim';
 
-import '../theme/editor.css';
+import '../theme/editor-dark.css';
 
 export default class Editor extends React.Component {
   constructor(props) {
@@ -50,11 +51,13 @@ export default class Editor extends React.Component {
 
   render() {
     return (
-      <textarea
-        ref={(ref) => {
-          this.textareaNode = ref;
-        }}
-      />
+      <Box overflow="auto" flex={1}>
+        <textarea
+          ref={(ref) => {
+            this.textareaNode = ref;
+          }}
+        />
+      </Box>
     );
   }
 }
