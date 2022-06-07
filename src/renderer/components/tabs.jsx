@@ -44,8 +44,11 @@ export default () => {
     });
 
     window.electron.ipcRenderer.on(
-      'RENDERER_REFRESH_FILE_SESSIONS',
-      (args) => {}
+      'RENDERER_CLOSE_OPEN_FILE_SESSION',
+      ({ uri }) => {
+        delete fileSessions[uri];
+        setFileSessions({ ...fileSessions });
+      }
     );
     window.electron.ipcRenderer.on(
       'RENDERER_UPDATE_OPEN_FILE_SESSION',

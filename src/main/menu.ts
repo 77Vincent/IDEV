@@ -6,12 +6,18 @@ import {
   BrowserWindow,
   MenuItemConstructorOptions,
 } from 'electron';
-import { writeFileSync, readdirSync, readFileSync } from 'fs';
+import { readdirSync, readFileSync } from 'fs';
 import { basename } from 'path';
 import storage from 'electron-json-storage';
 
 import { isDir } from './util';
-import { getFileContent, notify, openDirs, openFiles } from './actions';
+import {
+  closeOpenFileSession,
+  getFileContent,
+  notify,
+  openDirs,
+  openFiles,
+} from './actions';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -201,7 +207,13 @@ export default class MenuBuilder {
           accelerator: 'Command+M',
           selector: 'performMiniaturize:',
         },
-        { label: 'Close', accelerator: 'Command+W', selector: 'performClose:' },
+        {
+          label: 'Close',
+          accelerator: 'Command+W',
+          click() {
+            closeOpenFileSession(win);
+          },
+        },
         { type: 'separator' },
         { label: 'Bring All to Front', selector: 'arrangeInFront:' },
       ],
