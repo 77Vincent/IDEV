@@ -36,12 +36,14 @@ export default () => {
   const [fileSessions, setFileSessions] = useState({});
 
   useEffect(() => {
-    window.electron.ipcRenderer.on('RENDERER_UPDATE_FILE_SESSIONS', (args) => {
-      const { name, uri } = args;
-      setFileSessions((prevState) => {
-        return Object.assign(prevState, { [uri]: name });
-      });
-    });
+    window.electron.ipcRenderer.on(
+      'RENDERER_UPDATE_FILE_SESSIONS',
+      ({ name, uri }) => {
+        setFileSessions((prevState) => {
+          return Object.assign(prevState, { [uri]: name });
+        });
+      }
+    );
 
     window.electron.ipcRenderer.on(
       'RENDERER_CLOSE_OPEN_FILE_SESSION',

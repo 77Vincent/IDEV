@@ -1,7 +1,7 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { ActionList } from './actions';
 
-export type Channels = 'ipc-example' | ActionList;
+export type Channels = ActionList;
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
@@ -15,8 +15,8 @@ contextBridge.exposeInMainWorld('electron', {
 
       return () => ipcRenderer.removeListener(channel, subscription);
     },
-    once(channel: Channels, func: (...args: unknown[]) => void) {
-      ipcRenderer.once(channel, (_event, ...args) => func(...args));
+    once(channel: Channels, func: (args: object) => void) {
+      ipcRenderer.once(channel, (_event, ...args) => func(args));
     },
   },
 });
