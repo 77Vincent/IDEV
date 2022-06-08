@@ -45,6 +45,10 @@ export default () => {
       }
     );
 
+    window.electron.ipcRenderer.on('RENDERER_SET_FILE_SESSIONS', (payload) => {
+      setFileSessions({ ...payload });
+    });
+
     window.electron.ipcRenderer.on(
       'RENDERER_CLOSE_OPEN_FILE_SESSION',
       ({ uri }) => {

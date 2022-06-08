@@ -1,5 +1,8 @@
 import storage from 'electron-json-storage';
 
+const FILE_SESSIONS = 'fileSessions';
+const OPEN_FILE_SESSION = 'openFileSession';
+
 export function getFileSession() {
   const fileSessions = storage.getSync('fileSessions');
   const { uri } = storage.getSync('openFileSession');
@@ -9,8 +12,8 @@ export function getFileSession() {
   };
 }
 
-export function setOpenFileSession(openFileSessions = '') {
-  storage.set('openFileSession', { uri: openFileSessions }, (e) => {
+export function setOpenFileSession(openFileSession = '') {
+  storage.set(OPEN_FILE_SESSION, { uri: openFileSession }, (e) => {
     if (e) {
       throw e;
     }
@@ -18,8 +21,8 @@ export function setOpenFileSession(openFileSessions = '') {
 }
 
 export function patchFileSessions(fileSession = {}) {
-  const fileSessions = storage.getSync('fileSessions');
-  storage.set('fileSessions', Object.assign(fileSessions, fileSession), (e) => {
+  const fileSessions = storage.getSync(FILE_SESSIONS);
+  storage.set(FILE_SESSIONS, Object.assign(fileSessions, fileSession), (e) => {
     if (e) {
       throw e;
     }

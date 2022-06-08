@@ -16,7 +16,7 @@ import storage from 'electron-json-storage';
 
 import MenuBuilder from './menu';
 import { isDarwin, resolveHtmlPath } from './util';
-import './reducer';
+import './listener';
 
 export default class AppUpdater {
   constructor() {

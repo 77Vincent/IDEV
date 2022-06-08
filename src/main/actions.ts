@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, ipcMain } from 'electron';
 import {
   getFileSession,
   patchFileSessions,
@@ -6,7 +6,9 @@ import {
   setOpenFileSession,
 } from './dal';
 
+// renderer
 export const RENDERER_UPDATE_FILE_SESSIONS = 'RENDERER_UPDATE_FILE_SESSIONS';
+export const RENDERER_SET_FILE_SESSIONS = 'RENDERER_SET_FILE_SESSIONS';
 export const RENDERER_UPDATE_OPEN_FILE_SESSION =
   'RENDERER_UPDATE_OPEN_FILE_SESSION';
 export const RENDERER_RELOAD = 'RENDERER_RELOAD';
@@ -14,6 +16,8 @@ export const RENDERER_CLOSE_OPEN_FILE_SESSION =
   'RENDERER_CLOSE_OPEN_FILE_SESSION';
 export const RENDERER_GET_FILE_CONTENT = 'RENDERER_GET_FILE_CONTENT';
 export const EDITOR_LOAD_FILE = 'EDITOR_LOAD_FILE';
+
+// main
 export const MAIN_SAVE_FILE = 'MAIN_SAVE_FILE';
 export const OPEN_DIRS = 'OPEN_DIRS';
 export const NOTIFY = 'NOTIFY';
@@ -67,7 +71,7 @@ export function openFiles(
   win: BrowserWindow,
   payload: { name: string; uri: string; content: string }
 ) {
-  const { name, uri, content } = payload;
+  const { uri, name, content } = payload;
   patchFileSessions({
     [uri]: {
       name,
@@ -75,7 +79,6 @@ export function openFiles(
     },
   });
   setOpenFileSession(uri);
-  // inform renderer
   win.webContents.send(RENDERER_UPDATE_FILE_SESSIONS, payload);
   win.webContents.send(RENDERER_UPDATE_OPEN_FILE_SESSION, { uri });
   win.webContents.send(EDITOR_LOAD_FILE, payload);
