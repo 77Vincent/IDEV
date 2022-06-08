@@ -1,6 +1,10 @@
-import storage from 'electron-json-storage';
-import { join } from 'path';
 import { BrowserWindow } from 'electron';
+import {
+  getFileSession,
+  patchFileSessions,
+  setFileSessions,
+  setOpenFileSession,
+} from './dal';
 
 export const RENDERER_UPDATE_FILE_SESSIONS = 'RENDERER_UPDATE_FILE_SESSIONS';
 export const RENDERER_UPDATE_OPEN_FILE_SESSION =
@@ -13,8 +17,6 @@ export const EDITOR_LOAD_FILE = 'EDITOR_LOAD_FILE';
 export const MAIN_SAVE_FILE = 'MAIN_SAVE_FILE';
 export const OPEN_DIRS = 'OPEN_DIRS';
 export const NOTIFY = 'NOTIFY';
-
-storage.setDataPath(join(__dirname, './.vimer'));
 
 export type ActionList =
   | typeof EDITOR_LOAD_FILE
@@ -37,34 +39,27 @@ export function getFileContent(win: BrowserWindow) {
 }
 
 export function closeOpenFileSession(win: BrowserWindow) {
-  const fileSessions = storage.getSync('fileSessions');
-  const { uri } = storage.getSync('openFileSession');
+  const { fileSessions, openFileSession } = getFileSession();
   let newUri = '';
   let newContent = '';
   Object.keys(fileSessions).forEach((key, index) => {
-    if (uri === key) {
+    if (openFileSession === key) {
       if (index > 0) {
         newUri = Object.entries(fileSessions)[index - 1][0];
       }
     }
   });
-  delete fileSessions[uri];
+  delete fileSessions[openFileSession];
   if (newUri) {
     const { content } = fileSessions[newUri];
     newContent = content;
     win.webContents.send(RENDERER_UPDATE_OPEN_FILE_SESSION, { uri: newUri });
   }
-  storage.set('openFileSession', { uri: newUri }, (e) => {
-    if (e) {
-      throw e;
-    }
+  setOpenFileSession(newUri);
+  setFileSessions(fileSessions);
+  win.webContents.send(RENDERER_CLOSE_OPEN_FILE_SESSION, {
+    uri: openFileSession,
   });
-  storage.set('fileSessions', fileSessions, (e) => {
-    if (e) {
-      throw e;
-    }
-  });
-  win.webContents.send(RENDERER_CLOSE_OPEN_FILE_SESSION, { uri });
   win.webContents.send(EDITOR_LOAD_FILE, { content: newContent });
 }
 
@@ -73,28 +68,13 @@ export function openFiles(
   payload: { name: string; uri: string; content: string }
 ) {
   const { name, uri, content } = payload;
-  const fileSessions = storage.getSync('fileSessions');
-  // set all file sessions
-  storage.set(
-    'fileSessions',
-    Object.assign(fileSessions, {
-      [uri]: {
-        name,
-        content,
-      },
-    }),
-    (e) => {
-      if (e) {
-        throw e;
-      }
-    }
-  );
-  // set open file session
-  storage.set('openFileSession', { uri }, (e) => {
-    if (e) {
-      throw e;
-    }
+  patchFileSessions({
+    [uri]: {
+      name,
+      content,
+    },
   });
+  setOpenFileSession(uri);
   // inform renderer
   win.webContents.send(RENDERER_UPDATE_FILE_SESSIONS, payload);
   win.webContents.send(RENDERER_UPDATE_OPEN_FILE_SESSION, { uri });
@@ -105,10 +85,5 @@ export function openDirs(
   win: BrowserWindow,
   payload: { name: string; pwd: string }[]
 ) {
-  storage.set('open_dirs', payload, (e) => {
-    if (e) {
-      throw e;
-    }
-  });
   win.webContents.send(OPEN_DIRS, payload);
 }

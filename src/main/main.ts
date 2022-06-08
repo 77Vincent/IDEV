@@ -8,7 +8,7 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import path from 'path';
+import path, { join } from 'path';
 import { app, BrowserWindow, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
@@ -26,6 +26,7 @@ export default class AppUpdater {
   }
 }
 
+storage.setDataPath(join(__dirname, './.vimer'));
 const GLOBAL_TEMP_STORAGE = '.global-temp-storage';
 
 storage.setDataPath(path.join(app.getPath('userData'), GLOBAL_TEMP_STORAGE));
