@@ -1,5 +1,6 @@
 import { BrowserWindow } from 'electron';
 import { getFileSession, upsertFileSessions, setFileSessions } from './dal';
+import { debounce } from './util';
 
 // renderer
 export const RENDERER_SET_FILE_SESSIONS = 'RENDERER_SET_FILE_SESSIONS';
@@ -114,6 +115,9 @@ export async function nextFile(win: BrowserWindow) {
   win.webContents.send(RENDERER_SET_FILE_SESSIONS, { fileSessions });
   return Promise.resolve();
 }
+
+export const debouncedPreviousFile = debounce((win) => previousFile(win));
+export const debouncedNextFile = debounce((win) => nextFile(win));
 
 export function openFiles(
   win: BrowserWindow,

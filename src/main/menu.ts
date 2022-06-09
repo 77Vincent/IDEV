@@ -11,14 +11,14 @@ import { basename } from 'path';
 
 import { isDir } from './util';
 import {
-  closeOpenFileSession,
+  closeOpenFileSession, debouncedNextFile, debouncedPreviousFile,
   getFileContent,
   nextFile,
   notify,
   openDirs,
   openFiles,
-  previousFile,
-} from './actions';
+  previousFile
+} from "./actions";
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -207,14 +207,14 @@ export default class MenuBuilder {
           label: 'Previous File',
           accelerator: 'Shift+Command+[',
           click: () => {
-            previousFile(win);
+            debouncedPreviousFile(win);
           },
         },
         {
           label: 'Next File',
           accelerator: 'Shift+Command+]',
           click: () => {
-            nextFile(win);
+            debouncedNextFile(win);
           },
         },
       ],
