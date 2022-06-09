@@ -5,8 +5,6 @@ import { debounce } from './util';
 // renderer
 export const RENDERER_SET_FILE_SESSIONS = 'RENDERER_SET_FILE_SESSIONS';
 export const RENDERER_RELOAD = 'RENDERER_RELOAD';
-export const RENDERER_CLOSE_OPEN_FILE_SESSION =
-  'RENDERER_CLOSE_OPEN_FILE_SESSION';
 export const RENDERER_GET_FILE_CONTENT = 'RENDERER_GET_FILE_CONTENT';
 export const EDITOR_LOAD_FILE = 'EDITOR_LOAD_FILE';
 
@@ -15,26 +13,15 @@ export const MAIN_SAVE_FILE = 'MAIN_SAVE_FILE';
 export const OPEN_DIRS = 'OPEN_DIRS';
 export const NOTIFY = 'NOTIFY';
 
-export type ActionList =
-  | typeof EDITOR_LOAD_FILE
-  | typeof RENDERER_CLOSE_OPEN_FILE_SESSION
-  | typeof RENDERER_RELOAD
-  | typeof RENDERER_GET_FILE_CONTENT
-  | typeof MAIN_SAVE_FILE
-  | typeof OPEN_DIRS;
-
-export function notify(
-  win: BrowserWindow,
-  payload: { code: number; message: string }
-) {
+export function notify(win, payload = { code: 0, message: '' }) {
   win.webContents.send(NOTIFY, payload);
 }
 
-export function getFileContent(win: BrowserWindow) {
+export function getFileContent(win) {
   win.webContents.send(RENDERER_GET_FILE_CONTENT);
 }
 
-export async function closeOpenFileSession(win: BrowserWindow) {
+export async function closeOpenFileSession(win) {
   const { fileSessions } = getFileSession();
   const len = fileSessions.length;
   let content = '';
@@ -60,7 +47,7 @@ export async function closeOpenFileSession(win: BrowserWindow) {
   win.webContents.send(EDITOR_LOAD_FILE, { content });
 }
 
-export async function previousFile(win: BrowserWindow) {
+export async function previousFile(win) {
   const { fileSessions } = getFileSession();
   const len = fileSessions.length;
   let content = null;
@@ -88,7 +75,7 @@ export async function previousFile(win: BrowserWindow) {
   return Promise.resolve();
 }
 
-export async function nextFile(win: BrowserWindow) {
+export async function nextFile(win) {
   const { fileSessions } = getFileSession();
   const len = fileSessions.length;
   let content = null;
@@ -119,10 +106,7 @@ export async function nextFile(win: BrowserWindow) {
 export const debouncedPreviousFile = debounce((win) => previousFile(win));
 export const debouncedNextFile = debounce((win) => nextFile(win));
 
-export function openFiles(
-  win: BrowserWindow,
-  payload: { name: string; uri: string; content: string }
-) {
+export function openFiles(win, payload = { uri: '', name: '', content: '' }) {
   const { content } = payload;
   // update local storage
   const { fileSessions } = upsertFileSessions(payload);
@@ -131,9 +115,6 @@ export function openFiles(
   win.webContents.send(EDITOR_LOAD_FILE, { content });
 }
 
-export function openDirs(
-  win: BrowserWindow,
-  payload: { name: string; pwd: string }[]
-) {
+export function openDirs(win, payload) {
   win.webContents.send(OPEN_DIRS, payload);
 }
