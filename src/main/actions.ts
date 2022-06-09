@@ -3,8 +3,6 @@ import { getFileSession, upsertFileSessions, setFileSessions } from './dal';
 
 // renderer
 export const RENDERER_SET_FILE_SESSIONS = 'RENDERER_SET_FILE_SESSIONS';
-export const RENDERER_UPDATE_OPEN_FILE_SESSION =
-  'RENDERER_UPDATE_OPEN_FILE_SESSION';
 export const RENDERER_RELOAD = 'RENDERER_RELOAD';
 export const RENDERER_CLOSE_OPEN_FILE_SESSION =
   'RENDERER_CLOSE_OPEN_FILE_SESSION';
@@ -36,26 +34,29 @@ export function getFileContent(win: BrowserWindow) {
 }
 
 export function closeOpenFileSession(win: BrowserWindow) {
-  const { fileSessions, openFileSession } = getFileSession();
-  let newUri = '';
-  let newContent = '';
-  // delete from session
-  delete fileSessions[openFileSession];
-  // get the new last session and set it as the open file session
-  const l = Object.keys(fileSessions).length - 1;
-  if (l > 0) {
-    newUri = Object.entries(fileSessions)[l - 1][0];
+  const { fileSessions } = getFileSession();
+  const len = fileSessions.length;
+  let content = '';
+  let j = 0;
+  for (let i = 0; i < len; i += 1) {
+    const v = fileSessions[i];
+    if (v.open === true) {
+      fileSessions.splice(i, 1);
+      j = i;
+      break;
+    }
   }
-  if (newUri) {
-    const { content } = fileSessions[newUri];
-    newContent = content;
-    win.webContents.send(RENDERER_UPDATE_OPEN_FILE_SESSION, { uri: newUri });
+  // load the sibling file only when there were more than 1 file before
+  if (len > 1) {
+    j = j === len - 1 ? j - 1 : j;
+    fileSessions[j].open = true;
+    content = fileSessions[j].content;
   }
-  setFileSessions(fileSessions);
-  win.webContents.send(RENDERER_CLOSE_OPEN_FILE_SESSION, {
-    uri: openFileSession,
-  });
-  win.webContents.send(EDITOR_LOAD_FILE, { content: newContent });
+  // update local storage
+  setFileSessions({ fileSessions });
+  // update renderer
+  win.webContents.send(RENDERER_SET_FILE_SESSIONS, fileSessions);
+  win.webContents.send(EDITOR_LOAD_FILE, { content });
 }
 
 export function openFiles(
