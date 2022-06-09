@@ -55,7 +55,7 @@ export function closeOpenFileSession(win: BrowserWindow) {
   // update local storage
   setFileSessions({ fileSessions });
   // update renderer
-  win.webContents.send(RENDERER_SET_FILE_SESSIONS, fileSessions);
+  win.webContents.send(RENDERER_SET_FILE_SESSIONS, { fileSessions });
   win.webContents.send(EDITOR_LOAD_FILE, { content });
 }
 
@@ -67,7 +67,7 @@ export function openFiles(
   // update local storage
   const { fileSessions } = upsertFileSessions(payload);
   // update renderer
-  win.webContents.send(RENDERER_SET_FILE_SESSIONS, fileSessions);
+  win.webContents.send(RENDERER_SET_FILE_SESSIONS, { fileSessions });
   win.webContents.send(EDITOR_LOAD_FILE, { content });
 }
 

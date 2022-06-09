@@ -36,9 +36,12 @@ export default () => {
   const [fileSessions, setFileSessions] = useState([]);
 
   useEffect(() => {
-    window.electron.ipcRenderer.on('RENDERER_SET_FILE_SESSIONS', (payload) => {
-      setFileSessions([...payload]);
-    });
+    window.electron.ipcRenderer.on(
+      'RENDERER_SET_FILE_SESSIONS',
+      ({ fileSessions: fileSessionsInput }) => {
+        setFileSessions([...fileSessionsInput]);
+      }
+    );
   }, []);
 
   const Tab = ({ name, uri }) => {

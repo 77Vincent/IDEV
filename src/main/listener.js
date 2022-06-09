@@ -19,7 +19,7 @@ ipcMain.on('MAIN_LOAD_FILE', async (event, { uri }) => {
     }
   }
   setFileSessions({ fileSessions });
-  event.reply(RENDERER_SET_FILE_SESSIONS, fileSessions);
+  event.reply(RENDERER_SET_FILE_SESSIONS, { fileSessions });
 });
 
 ipcMain.on('MAIN_SAVE_FILE', async (event, { content, name }) => {
@@ -47,5 +47,5 @@ ipcMain.on(RENDERER_RELOAD, async (event) => {
   if (changed) {
     setFileSessions({ fileSessions });
   }
-  event.reply(RENDERER_SET_FILE_SESSIONS, fileSessions);
+  event.reply(RENDERER_SET_FILE_SESSIONS, { fileSessions });
 });
