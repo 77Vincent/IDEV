@@ -59,6 +59,44 @@ export function closeOpenFileSession(win: BrowserWindow) {
   win.webContents.send(EDITOR_LOAD_FILE, { content });
 }
 
+export function previousFile(win: BrowserWindow) {
+  const { fileSessions } = getFileSession();
+  const len = fileSessions.length;
+  for (let i = 0; i < len; i += 1) {
+    const v = fileSessions[i];
+    if (v.open === true) {
+      if (i !== 0) {
+        v.open = false;
+        fileSessions[i - 1].open = true;
+        const { content } = fileSessions[i - 1];
+        setFileSessions({ fileSessions });
+        win.webContents.send(EDITOR_LOAD_FILE, { content });
+        win.webContents.send(RENDERER_SET_FILE_SESSIONS, { fileSessions });
+      }
+      break;
+    }
+  }
+}
+
+export function nextFile(win: BrowserWindow) {
+  const { fileSessions } = getFileSession();
+  const len = fileSessions.length;
+  for (let i = 0; i < len; i += 1) {
+    const v = fileSessions[i];
+    if (v.open === true) {
+      if (i !== len - 1) {
+        v.open = false;
+        fileSessions[i + 1].open = true;
+        const { content } = fileSessions[i + 1];
+        setFileSessions({ fileSessions });
+        win.webContents.send(EDITOR_LOAD_FILE, { content });
+        win.webContents.send(RENDERER_SET_FILE_SESSIONS, { fileSessions });
+      }
+      break;
+    }
+  }
+}
+
 export function openFiles(
   win: BrowserWindow,
   payload: { name: string; uri: string; content: string }

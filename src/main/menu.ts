@@ -13,9 +13,11 @@ import { isDir } from './util';
 import {
   closeOpenFileSession,
   getFileContent,
+  nextFile,
   notify,
   openDirs,
   openFiles,
+  previousFile,
 } from './actions';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
@@ -198,6 +200,25 @@ export default class MenuBuilder {
         },
       ],
     };
+    const subMenuNavigate: MenuItemConstructorOptions = {
+      label: 'Navigate',
+      submenu: [
+        {
+          label: 'Previous File',
+          accelerator: 'Shift+Command+[',
+          click: () => {
+            previousFile(win);
+          },
+        },
+        {
+          label: 'Next File',
+          accelerator: 'Shift+Command+]',
+          click: () => {
+            nextFile(win);
+          },
+        },
+      ],
+    };
     const subMenuWindow: DarwinMenuItemConstructorOptions = {
       label: 'Window',
       submenu: [
@@ -260,6 +281,7 @@ export default class MenuBuilder {
       subMenuFile,
       subMenuEdit,
       subMenuView,
+      subMenuNavigate,
       subMenuWindow,
       subMenuHelp,
     ];
