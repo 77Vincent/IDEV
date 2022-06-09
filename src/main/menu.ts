@@ -8,7 +8,6 @@ import {
 } from 'electron';
 import { readdirSync, readFileSync } from 'fs';
 import { basename } from 'path';
-import storage from 'electron-json-storage';
 
 import { isDir } from './util';
 import {
@@ -108,20 +107,20 @@ export default class MenuBuilder {
               properties: ['openFile', 'openDirectory'],
             });
             const { filePaths } = res;
-            const p = filePaths[0];
+            const uri = filePaths[0];
             try {
-              if (isDir(p)) {
-                const children = readdirSync(p);
+              if (isDir(uri)) {
+                const children = readdirSync(uri);
                 const payload = children.map((v) => ({
                   name: v,
-                  pwd: p,
+                  pwd: uri,
                 }));
                 openDirs(win, payload);
               } else {
-                const content = readFileSync(p, 'utf-8');
+                const content = readFileSync(uri, 'utf-8');
                 openFiles(win, {
-                  name: basename(p),
-                  uri: p,
+                  name: basename(uri),
+                  uri,
                   content,
                 });
               }

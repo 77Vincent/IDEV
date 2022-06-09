@@ -33,40 +33,12 @@ const StyledTab = styled('div')(({ theme }) => {
 });
 
 export default () => {
-  const [openFileSession, setOpenFileSession] = useState('');
-  const [fileSessions, setFileSessions] = useState({});
+  const [fileSessions, setFileSessions] = useState([]);
 
   useEffect(() => {
-    window.electron.ipcRenderer.on(
-      'RENDERER_UPDATE_FILE_SESSIONS',
-      ({ name, uri }) => {
-        setFileSessions((prevState) => {
-          return Object.assign(prevState, { [uri]: name });
-        });
-      }
-    );
-
     window.electron.ipcRenderer.on('RENDERER_SET_FILE_SESSIONS', (payload) => {
-      setFileSessions({ ...payload });
+      setFileSessions([...payload]);
     });
-
-    window.electron.ipcRenderer.on(
-      'RENDERER_CLOSE_OPEN_FILE_SESSION',
-      ({ uri }) => {
-        setFileSessions((prevState) => {
-          delete prevState[uri];
-          return {
-            ...prevState,
-          };
-        });
-      }
-    );
-    window.electron.ipcRenderer.on(
-      'RENDERER_UPDATE_OPEN_FILE_SESSION',
-      ({ uri }) => {
-        setOpenFileSession(String(uri));
-      }
-    );
   }, []);
 
   const Tab = ({ name, uri }) => {
@@ -81,7 +53,6 @@ export default () => {
           paddingLeft={1}
           paddingRight={1}
           onClick={() => {
-            setOpenFileSession(uri);
             window.electron.ipcRenderer.send('MAIN_LOAD_FILE', { uri });
           }}
         >
@@ -96,16 +67,15 @@ export default () => {
   return (
     <Wrapper>
       <Box display="flex">
-        {Object.keys(fileSessions).map((key) => {
-          const file = fileSessions[key];
+        {fileSessions.map(({ uri, name, open }) => {
           return (
-            <Box key={key}>
-              {openFileSession === key ? (
+            <Box key={uri}>
+              {open ? (
                 <ActiveTab>
-                  <Tab uri={key} name={file} />
+                  <Tab uri={uri} name={name} />
                 </ActiveTab>
               ) : (
-                <Tab uri={key} name={file} />
+                <Tab uri={uri} name={name} />
               )}
             </Box>
           );

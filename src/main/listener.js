@@ -3,17 +3,23 @@ import { readFileSync } from 'fs';
 
 import {
   EDITOR_LOAD_FILE,
-  RENDERER_UPDATE_OPEN_FILE_SESSION,
   RENDERER_RELOAD,
   RENDERER_SET_FILE_SESSIONS,
 } from './actions';
-import { getFileSession, setFileSessions, setOpenFileSession } from './dal';
+import { getFileSession, setFileSessions } from './dal';
 
 ipcMain.on('MAIN_LOAD_FILE', async (event, { uri }) => {
   const { fileSessions } = getFileSession();
-  setOpenFileSession(uri);
-  const { content } = fileSessions[uri];
-  event.reply(EDITOR_LOAD_FILE, { content });
+  for (let i = 0; i < fileSessions.length; i += 1) {
+    const v = fileSessions[i];
+    v.open = false;
+    if (v.uri === uri) {
+      v.open = true;
+      event.reply(EDITOR_LOAD_FILE, { content: v.content });
+    }
+  }
+  setFileSessions({ fileSessions });
+  event.reply(RENDERER_SET_FILE_SESSIONS, fileSessions);
 });
 
 ipcMain.on('MAIN_SAVE_FILE', async (event, { content, name }) => {
@@ -23,26 +29,23 @@ ipcMain.on('MAIN_SAVE_FILE', async (event, { content, name }) => {
 });
 
 ipcMain.on(RENDERER_RELOAD, async (event) => {
-  const { fileSessions, openFileSession } = getFileSession();
+  const { fileSessions } = getFileSession();
   // check whether any file is changed
   let changed = false;
-  const payload = {};
-  Object.keys(fileSessions).forEach((uri) => {
-    const { content: cachedContent, name } = fileSessions[uri];
-    const content = readFileSync(uri, 'utf-8');
-    payload[uri] = name;
+  fileSessions.forEach((v) => {
+    const { uri, content } = v;
+    const rawContent = readFileSync(uri, 'utf-8');
     // not the actual file is newer, update cache
-    if (cachedContent !== content) {
+    if (rawContent !== content) {
+      v.constructor = rawContent;
       changed = true;
-      fileSessions[uri].content = content;
+    }
+    if (v.open) {
+      event.reply(EDITOR_LOAD_FILE, { content });
     }
   });
   if (changed) {
-    setFileSessions(fileSessions);
+    setFileSessions({ fileSessions });
   }
-  // update renderer
-  const { content } = fileSessions[openFileSession];
-  event.reply(EDITOR_LOAD_FILE, { content });
-  event.reply(RENDERER_SET_FILE_SESSIONS, payload);
-  event.reply(RENDERER_UPDATE_OPEN_FILE_SESSION, { uri: openFileSession });
+  event.reply(RENDERER_SET_FILE_SESSIONS, fileSessions);
 });

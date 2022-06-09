@@ -1,36 +1,40 @@
 import storage from 'electron-json-storage';
 
 const FILE_SESSIONS = 'fileSessions';
-const OPEN_FILE_SESSION = 'openFileSession';
 
 export function getFileSession() {
-  const fileSessions = storage.getSync('fileSessions');
-  const { uri } = storage.getSync('openFileSession');
-  return {
-    fileSessions,
-    openFileSession: uri,
-  };
+  const res = storage.getSync(FILE_SESSIONS);
+  if (!res.fileSessions) {
+    res.fileSessions = [];
+  }
+  return res;
 }
 
-export function setOpenFileSession(openFileSession = '') {
-  storage.set(OPEN_FILE_SESSION, { uri: openFileSession }, (e) => {
+export function upsertFileSessions(payload = {}) {
+  const { fileSessions } = getFileSession();
+  let found = false;
+  payload.open = true;
+  for (let i = 0; i < fileSessions.length; i += 1) {
+    const v = fileSessions[i];
+    v.open = false;
+    if (v.uri === payload.uri) {
+      fileSessions[i] = payload;
+      found = true;
+    }
+  }
+  if (!found) {
+    fileSessions.push(payload);
+  }
+  storage.set(FILE_SESSIONS, { fileSessions }, (e) => {
     if (e) {
       throw e;
     }
   });
+  return { fileSessions };
 }
 
-export function patchFileSessions(fileSession = {}) {
-  const fileSessions = storage.getSync(FILE_SESSIONS);
-  storage.set(FILE_SESSIONS, Object.assign(fileSessions, fileSession), (e) => {
-    if (e) {
-      throw e;
-    }
-  });
-}
-
-export function setFileSessions(fileSessions) {
-  storage.set(FILE_SESSIONS, fileSessions, (e) => {
+export function setFileSessions(payload = { fileSessions: [] }) {
+  storage.set(FILE_SESSIONS, payload, (e) => {
     if (e) {
       throw e;
     }
