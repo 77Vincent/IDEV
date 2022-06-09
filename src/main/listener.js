@@ -18,14 +18,14 @@ ipcMain.on('MAIN_LOAD_FILE', async (event, { uri }) => {
       event.reply(EDITOR_LOAD_FILE, { content: v.content });
     }
   }
-  setFileSessions({ fileSessions });
+  await setFileSessions({ fileSessions });
   event.reply(RENDERER_SET_FILE_SESSIONS, { fileSessions });
 });
 
 ipcMain.on('MAIN_SAVE_FILE', async (event, { content, name }) => {
   const { fileSessions, openFileSession } = getFileSession();
   fileSessions[openFileSession].content = content;
-  setFileSessions(fileSessions);
+  await setFileSessions(fileSessions);
 });
 
 ipcMain.on(RENDERER_RELOAD, async (event) => {
@@ -45,7 +45,7 @@ ipcMain.on(RENDERER_RELOAD, async (event) => {
     }
   });
   if (changed) {
-    setFileSessions({ fileSessions });
+    await setFileSessions({ fileSessions });
   }
   event.reply(RENDERER_SET_FILE_SESSIONS, { fileSessions });
 });

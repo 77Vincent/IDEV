@@ -1,6 +1,9 @@
+import { promisify } from 'util';
 import storage from 'electron-json-storage';
 
 const FILE_SESSIONS = 'fileSessions';
+
+const storageSet = promisify(storage.set);
 
 export function getFileSession() {
   const res = storage.getSync(FILE_SESSIONS);
@@ -33,10 +36,6 @@ export function upsertFileSessions(payload = {}) {
   return { fileSessions };
 }
 
-export function setFileSessions(payload = { fileSessions: [] }) {
-  storage.set(FILE_SESSIONS, payload, (e) => {
-    if (e) {
-      throw e;
-    }
-  });
+export async function setFileSessions(payload = { fileSessions: [] }) {
+  return storageSet(FILE_SESSIONS, payload);
 }

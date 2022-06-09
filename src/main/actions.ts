@@ -33,7 +33,7 @@ export function getFileContent(win: BrowserWindow) {
   win.webContents.send(RENDERER_GET_FILE_CONTENT);
 }
 
-export function closeOpenFileSession(win: BrowserWindow) {
+export async function closeOpenFileSession(win: BrowserWindow) {
   const { fileSessions } = getFileSession();
   const len = fileSessions.length;
   let content = '';
@@ -53,48 +53,66 @@ export function closeOpenFileSession(win: BrowserWindow) {
     content = fileSessions[j].content;
   }
   // update local storage
-  setFileSessions({ fileSessions });
+  await setFileSessions({ fileSessions });
   // update renderer
   win.webContents.send(RENDERER_SET_FILE_SESSIONS, { fileSessions });
   win.webContents.send(EDITOR_LOAD_FILE, { content });
 }
 
-export function previousFile(win: BrowserWindow) {
+export async function previousFile(win: BrowserWindow) {
   const { fileSessions } = getFileSession();
   const len = fileSessions.length;
+  let content = null;
   for (let i = 0; i < len; i += 1) {
     const v = fileSessions[i];
     if (v.open === true) {
       if (i !== 0) {
         v.open = false;
         fileSessions[i - 1].open = true;
-        const { content } = fileSessions[i - 1];
-        setFileSessions({ fileSessions });
-        win.webContents.send(EDITOR_LOAD_FILE, { content });
-        win.webContents.send(RENDERER_SET_FILE_SESSIONS, { fileSessions });
+        content = fileSessions[i - 1].content;
       }
       break;
     }
   }
+  try {
+    await setFileSessions({ fileSessions });
+  } catch (e) {
+    console.log(e);
+    return Promise.reject();
+  }
+  if (content !== null) {
+    win.webContents.send(EDITOR_LOAD_FILE, { content });
+  }
+  win.webContents.send(RENDERER_SET_FILE_SESSIONS, { fileSessions });
+  return Promise.resolve();
 }
 
-export function nextFile(win: BrowserWindow) {
+export async function nextFile(win: BrowserWindow) {
   const { fileSessions } = getFileSession();
   const len = fileSessions.length;
+  let content = null;
   for (let i = 0; i < len; i += 1) {
     const v = fileSessions[i];
     if (v.open === true) {
       if (i !== len - 1) {
         v.open = false;
         fileSessions[i + 1].open = true;
-        const { content } = fileSessions[i + 1];
-        setFileSessions({ fileSessions });
-        win.webContents.send(EDITOR_LOAD_FILE, { content });
-        win.webContents.send(RENDERER_SET_FILE_SESSIONS, { fileSessions });
+        content = fileSessions[i + 1].content;
       }
       break;
     }
   }
+  try {
+    await setFileSessions({ fileSessions });
+  } catch (e) {
+    console.log(e);
+    return Promise.reject();
+  }
+  if (content !== null) {
+    win.webContents.send(EDITOR_LOAD_FILE, { content });
+  }
+  win.webContents.send(RENDERER_SET_FILE_SESSIONS, { fileSessions });
+  return Promise.resolve();
 }
 
 export function openFiles(
