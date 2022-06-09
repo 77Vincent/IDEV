@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain } from 'electron';
+import { BrowserWindow } from 'electron';
 import {
   getFileSession,
   patchFileSessions,
@@ -46,14 +46,13 @@ export function closeOpenFileSession(win: BrowserWindow) {
   const { fileSessions, openFileSession } = getFileSession();
   let newUri = '';
   let newContent = '';
-  Object.keys(fileSessions).forEach((key, index) => {
-    if (openFileSession === key) {
-      if (index > 0) {
-        newUri = Object.entries(fileSessions)[index - 1][0];
-      }
-    }
-  });
+  // delete from session
   delete fileSessions[openFileSession];
+  // get the new last session and set it as the open file session
+  const l = Object.keys(fileSessions).length - 1;
+  if (l > 0) {
+    newUri = Object.entries(fileSessions)[l - 1][0];
+  }
   if (newUri) {
     const { content } = fileSessions[newUri];
     newContent = content;

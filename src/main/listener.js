@@ -4,7 +4,6 @@ import { readFileSync } from 'fs';
 import {
   EDITOR_LOAD_FILE,
   RENDERER_UPDATE_OPEN_FILE_SESSION,
-  RENDERER_UPDATE_FILE_SESSIONS,
   RENDERER_RELOAD,
   RENDERER_SET_FILE_SESSIONS,
 } from './actions';

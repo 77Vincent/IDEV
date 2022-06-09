@@ -16,9 +16,6 @@ export default class Editor extends React.Component {
   constructor(props) {
     super(props);
     this.textareaNode = React.createRef();
-    this.state = {
-      content: '',
-    };
   }
 
   componentDidMount() {
@@ -33,18 +30,16 @@ export default class Editor extends React.Component {
       keyMap: 'vim',
       cursorScrollMargin: 24,
       styleActiveLine: true,
+      value: '',
       extraKeys: {
         'Cmd-/': (cm) => {
           cm.execCommand('toggleComment');
         },
       },
     });
-
-    editor.setValue(this.state.content);
     editor.setSize('100%', '100%');
 
     window.electron.ipcRenderer.on('EDITOR_LOAD_FILE', ({ content }) => {
-      this.setState({ content });
       editor.setValue(content);
     });
 

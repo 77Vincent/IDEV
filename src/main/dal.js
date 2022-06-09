@@ -29,4 +29,10 @@ export function patchFileSessions(fileSession = {}) {
   });
 }
 
-export function setFileSessions(fileSessions) {}
+export function setFileSessions(fileSessions) {
+  storage.set(FILE_SESSIONS, fileSessions, (e) => {
+    if (e) {
+      throw e;
+    }
+  });
+}

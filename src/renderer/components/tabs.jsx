@@ -19,6 +19,7 @@ const ActiveTab = styled('div')(({ theme }) => {
   return {
     backgroundColor: theme.palette.grey[600],
     color: theme.palette.common.white,
+    fontWeight: 400,
   };
 });
 
@@ -52,8 +53,12 @@ export default () => {
     window.electron.ipcRenderer.on(
       'RENDERER_CLOSE_OPEN_FILE_SESSION',
       ({ uri }) => {
-        delete fileSessions[uri];
-        setFileSessions({ ...fileSessions });
+        setFileSessions((prevState) => {
+          delete prevState[uri];
+          return {
+            ...prevState,
+          };
+        });
       }
     );
     window.electron.ipcRenderer.on(
@@ -80,7 +85,9 @@ export default () => {
             window.electron.ipcRenderer.send('MAIN_LOAD_FILE', { uri });
           }}
         >
-          <Typography variant="body2">{name}</Typography>
+          <Typography fontWeight="inherit" variant="body2">
+            {name}
+          </Typography>
         </Box>
       </StyledTab>
     );
