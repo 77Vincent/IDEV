@@ -1,4 +1,3 @@
-import { BrowserWindow } from 'electron';
 import { getFileSession, upsertFileSessions, setFileSessions } from './dal';
 import { debounce } from './util';
 
@@ -7,6 +6,7 @@ export const RENDERER_SET_FILE_SESSIONS = 'RENDERER_SET_FILE_SESSIONS';
 export const RENDERER_RELOAD = 'RENDERER_RELOAD';
 export const RENDERER_GET_FILE_CONTENT = 'RENDERER_GET_FILE_CONTENT';
 export const EDITOR_LOAD_FILE = 'EDITOR_LOAD_FILE';
+export const EDITOR_FOCUS = 'EDITOR_FOCUS';
 
 // main
 export const MAIN_SAVE_FILE = 'MAIN_SAVE_FILE';
@@ -47,7 +47,7 @@ export async function closeOpenFileSession(win) {
   win.webContents.send(EDITOR_LOAD_FILE, { content });
 }
 
-export async function previousFile(win) {
+async function previousFile(win) {
   const { fileSessions } = getFileSession();
   const len = fileSessions.length;
   let content = null;
@@ -75,7 +75,7 @@ export async function previousFile(win) {
   return Promise.resolve();
 }
 
-export async function nextFile(win) {
+async function nextFile(win) {
   const { fileSessions } = getFileSession();
   const len = fileSessions.length;
   let content = null;
@@ -103,8 +103,13 @@ export async function nextFile(win) {
   return Promise.resolve();
 }
 
+export function editorFocus(win) {
+  win.webContents.send(EDITOR_FOCUS);
+}
+
 export const debouncedPreviousFile = debounce((win) => previousFile(win));
 export const debouncedNextFile = debounce((win) => nextFile(win));
+export const debouncedEditorFocus = debounce((win) => editorFocus(win));
 
 export function openFiles(win, payload = { uri: '', name: '', content: '' }) {
   const { content } = payload;

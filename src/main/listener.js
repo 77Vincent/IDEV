@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 
 import {
   EDITOR_LOAD_FILE,
+  MAIN_SAVE_FILE,
   RENDERER_RELOAD,
   RENDERER_SET_FILE_SESSIONS,
 } from './actions';
@@ -22,7 +23,7 @@ ipcMain.on('MAIN_LOAD_FILE', async (event, { uri }) => {
   event.reply(RENDERER_SET_FILE_SESSIONS, { fileSessions });
 });
 
-ipcMain.on('MAIN_SAVE_FILE', async (event, { content, name }) => {
+ipcMain.on(MAIN_SAVE_FILE, async (event, { content, name }) => {
   const { fileSessions, openFileSession } = getFileSession();
   fileSessions[openFileSession].content = content;
   await setFileSessions(fileSessions);
@@ -37,7 +38,7 @@ ipcMain.on(RENDERER_RELOAD, async (event) => {
     const rawContent = readFileSync(uri, 'utf-8');
     // not the actual file is newer, update cache
     if (rawContent !== content) {
-      v.constructor = rawContent;
+      v.content = rawContent;
       changed = true;
     }
     if (v.open) {

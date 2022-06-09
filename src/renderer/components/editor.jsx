@@ -12,6 +12,7 @@ import 'codemirror/keymap/vim';
 import '../theme/codemirror.css';
 import '../theme/editor-dark.css';
 
+
 export default class Editor extends React.Component {
   constructor(props) {
     super(props);
@@ -41,6 +42,10 @@ export default class Editor extends React.Component {
 
     window.electron.ipcRenderer.on('EDITOR_LOAD_FILE', ({ content }) => {
       editor.setValue(content);
+    });
+
+    window.electron.ipcRenderer.on('EDITOR_FOCUS', () => {
+      editor.focus();
     });
 
     window.electron.ipcRenderer.on('RENDERER_GET_FILE_CONTENT', () => {

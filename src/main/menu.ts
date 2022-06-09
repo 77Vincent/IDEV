@@ -11,14 +11,15 @@ import { basename } from 'path';
 
 import { isDir } from './util';
 import {
-  closeOpenFileSession, debouncedNextFile, debouncedPreviousFile,
+  closeOpenFileSession,
+  debouncedEditorFocus,
+  debouncedNextFile,
+  debouncedPreviousFile,
   getFileContent,
-  nextFile,
   notify,
   openDirs,
   openFiles,
-  previousFile
-} from "./actions";
+} from './actions';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -215,6 +216,13 @@ export default class MenuBuilder {
           accelerator: 'Shift+Command+]',
           click: () => {
             debouncedNextFile(win);
+          },
+        },
+        {
+          label: 'Focus Editor',
+          accelerator: 'Esc',
+          click: () => {
+            debouncedEditorFocus(win);
           },
         },
       ],
