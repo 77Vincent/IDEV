@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box } from '@mui/material';
+import { Box } from "@mui/material";
 import CodeMirror from 'codemirror';
 import 'codemirror/addon/edit/closebrackets';
 import 'codemirror/addon/edit/matchbrackets';
@@ -11,7 +11,6 @@ import 'codemirror/mode/jsx/jsx';
 import 'codemirror/keymap/vim';
 import '../theme/codemirror.css';
 import '../theme/editor-dark.css';
-
 
 export default class Editor extends React.Component {
   constructor(props) {
@@ -29,7 +28,7 @@ export default class Editor extends React.Component {
       matchtags: true,
       matchBrackets: true,
       keyMap: 'vim',
-      cursorScrollMargin: 24,
+      // cursorScrollMargin: 0,
       styleActiveLine: true,
       value: '',
       extraKeys: {
@@ -56,7 +55,7 @@ export default class Editor extends React.Component {
 
   render() {
     return (
-      <Box overflow="auto" flex={1}>
+      <Box marginTop={2.8} marginBottom={2.8} overflow="auto" flex={1}>
         <textarea
           ref={(ref) => {
             this.textareaNode = ref;

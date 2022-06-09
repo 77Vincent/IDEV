@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 
 import Editor from './components/editor';
 import Tabs from './components/tabs';
+import FileInfo from './components/fileInfo';
 // import icon from '../../assets/icon.svg';
 import './App.css';
 
@@ -36,6 +37,7 @@ const Hello = () => {
       >
         <Tabs />
         <Editor />
+        <FileInfo />
       </Box>
     </ThemeProvider>
   );
