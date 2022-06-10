@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box } from '@mui/material';
+import { Box, styled } from '@mui/material';
 import CodeMirror from 'codemirror';
 import 'codemirror/addon/edit/closebrackets';
 import 'codemirror/addon/edit/matchbrackets';
@@ -13,6 +13,13 @@ import '../theme/codemirror.css';
 import '../theme/editor-dark.css';
 import FileInfo from './fileInfo';
 import Tabs from './tabs';
+
+const TextareaWrapper = styled('div')`
+  position: absolute;
+  top: 24px;
+  bottom: 24px;
+  width: 100%;
+`;
 
 export default class Editor extends React.Component {
   constructor(props) {
@@ -68,19 +75,13 @@ export default class Editor extends React.Component {
     return (
       <Box position="relative" height="100%">
         <Tabs />
-        <Box
-          position="absolute"
-          top={24}
-          bottom={24}
-          overflow="auto"
-          width="100%"
-        >
+        <TextareaWrapper>
           <textarea
             ref={(ref) => {
               this.textareaNode = ref;
             }}
           />
-        </Box>
+        </TextareaWrapper>
         <FileInfo pos={{ line, ch }} />
       </Box>
     );
