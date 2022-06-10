@@ -1,13 +1,23 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import 'normalize.css';
-import { Box, ThemeProvider } from '@mui/material';
+import { styled, ThemeProvider } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import Editor from './components/editor';
-import Tabs from './components/tabs';
 // import icon from '../../assets/icon.svg';
 import './App.css';
 import theme from './theme/theme';
+
+export const Wrapper = styled('div')`
+  position: relative;
+  top: 32px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: calc(100vh - 32px);
+  overflow: hidden;
+`;
 
 const Main = () => {
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -23,16 +33,9 @@ const Main = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box
-        overflow="hidden"
-        flexDirection="column"
-        height="100vh"
-        display="flex"
-        paddingTop={isFullScreen ? 0 : 4.2}
-      >
-        <Tabs />
+      <Wrapper>
         <Editor />
-      </Box>
+      </Wrapper>
     </ThemeProvider>
   );
 };

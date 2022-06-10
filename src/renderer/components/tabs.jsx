@@ -4,22 +4,12 @@ import PT from 'prop-types';
 
 import { Wrapper } from './common';
 
-const ActiveTab = styled('div')(({ theme }) => {
-  return {
-    backgroundColor: theme.palette.grey[600],
-    color: theme.palette.common.white,
-    fontWeight: 400,
-  };
-});
-
-const StyledTab = styled('div')(({ theme }) => {
-  return {
-    '&:hover': {
-      backgroundColor: theme.palette.grey[800],
-    },
-    cursor: 'pointer',
-  };
-});
+const StyledWrapper = styled(Wrapper)`
+  top: 0;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: ${({ theme }) => theme.palette.grey[800]};
+`;
 
 export default () => {
   const [fileSessions, setFileSessions] = useState([]);
@@ -33,51 +23,61 @@ export default () => {
     );
   }, []);
 
-  const Tab = ({ name, uri }) => {
+  const Tab = (props) => {
+    const { name, uri } = props;
     return (
-      <StyledTab>
-        <Box
-          height={24}
-          minWidth={75}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          paddingLeft={1}
-          paddingRight={1}
-          onClick={() => {
-            window.electron.ipcRenderer.send('MAIN_LOAD_FILE', { uri });
-          }}
-        >
-          <Typography fontWeight="inherit" variant="body2">
-            {name}
-          </Typography>
-        </Box>
-      </StyledTab>
+      <Box
+        height={24}
+        minWidth={75}
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        paddingLeft={1}
+        paddingRight={1}
+        onClick={() => {
+          window.electron.ipcRenderer.send('MAIN_LOAD_FILE', { uri });
+        }}
+        {...props}
+      >
+        <Typography fontWeight="inherit" variant="body2">
+          {name}
+        </Typography>
+      </Box>
     );
   };
 
-  Tab.propTypes = {
-    name: PT.string,
-    uri: PT.string,
-  };
+  const StyledTab = styled(Tab)`
+    &:hover: {
+      background-color: ${({ theme }) => theme.palette.grey[800]};
+    }
+    cursor: pointer;
+  `;
 
+  const ActiveTab = styled(StyledTab)`
+    background-color: ${({ theme }) => theme.palette.grey[600]};
+    color: white;
+    font-weight: 400;
+  `;
+
+  Tab.propTypes = {
+    name: PT.string.isRequired,
+    uri: PT.string.isRequired,
+  };
   return (
-    <Wrapper>
+    <StyledWrapper>
       <Box display="flex">
         {fileSessions.map(({ uri, name, open }) => {
           return (
             <Box key={uri}>
               {open ? (
-                <ActiveTab>
-                  <Tab uri={uri} name={name} />
-                </ActiveTab>
+                <ActiveTab uri={uri} name={name} />
               ) : (
-                <Tab uri={uri} name={name} />
+                <StyledTab uri={uri} name={name} />
               )}
             </Box>
           );
         })}
       </Box>
-    </Wrapper>
+    </StyledWrapper>
   );
 };

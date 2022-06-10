@@ -12,6 +12,7 @@ import 'codemirror/keymap/vim';
 import '../theme/codemirror.css';
 import '../theme/editor-dark.css';
 import FileInfo from './fileInfo';
+import Tabs from './tabs';
 
 export default class Editor extends React.Component {
   constructor(props) {
@@ -65,8 +66,15 @@ export default class Editor extends React.Component {
   render() {
     const { line, ch } = this.state;
     return (
-      <>
-        <Box marginTop={2.8} marginBottom={2.8} overflow="auto" flex={1}>
+      <Box position="relative" height="100%">
+        <Tabs />
+        <Box
+          position="absolute"
+          top={24}
+          bottom={24}
+          overflow="auto"
+          width="100%"
+        >
           <textarea
             ref={(ref) => {
               this.textareaNode = ref;
@@ -74,7 +82,7 @@ export default class Editor extends React.Component {
           />
         </Box>
         <FileInfo pos={{ line, ch }} />
-      </>
+      </Box>
     );
   }
 }
