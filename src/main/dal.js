@@ -1,7 +1,9 @@
 import { promisify } from 'util';
 import storage from 'electron-json-storage';
+import { debounce } from './util';
 
 const FILE_SESSIONS = 'fileSessions';
+const SETTINGS = 'settings';
 
 const storageSet = promisify(storage.set);
 
@@ -13,7 +15,24 @@ export function getFileSession() {
   return res;
 }
 
-export function upsertFileSessions(payload = {}) {
+export function getSettings() {
+  const res = storage.getSync(SETTINGS);
+  if (!res.fileExplorerWidth) {
+    res.fileExplorerWidth = 200;
+  }
+  return res;
+}
+
+export async function patchSettings(payload = {}) {
+  return storageSet(SETTINGS, payload);
+}
+
+export const debouncedPatchSettings = debounce(
+  async (payload) => patchSettings(payload),
+  100
+);
+
+export async function upsertFileSessions(payload = {}) {
   const { fileSessions } = getFileSession();
   let found = false;
   payload.open = true;
@@ -28,11 +47,7 @@ export function upsertFileSessions(payload = {}) {
   if (!found) {
     fileSessions.push(payload);
   }
-  storage.set(FILE_SESSIONS, { fileSessions }, (e) => {
-    if (e) {
-      throw e;
-    }
-  });
+  await storageSet(FILE_SESSIONS, { fileSessions });
   return { fileSessions };
 }
 

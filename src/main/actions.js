@@ -121,10 +121,13 @@ export const debouncedPreviousFile = debounce((win) => previousFile(win));
 export const debouncedNextFile = debounce((win) => nextFile(win));
 export const debouncedEditorFocus = debounce((win) => editorFocus(win));
 
-export function openFiles(win, payload = { uri: '', name: '', content: '' }) {
+export async function openFiles(
+  win,
+  payload = { uri: '', name: '', content: '' }
+) {
   const { content } = payload;
   // update local storage
-  const { fileSessions } = upsertFileSessions(payload);
+  const { fileSessions } = await upsertFileSessions(payload);
   // update renderer
   win.webContents.send(RENDERER_SET_FILE_SESSIONS, { fileSessions });
   win.webContents.send(EDITOR_LOAD_FILE, { content });

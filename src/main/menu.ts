@@ -121,7 +121,7 @@ export default class MenuBuilder {
                 openDirs(win, payload);
               } else {
                 const content = readFileSync(uri, 'utf-8');
-                openFiles(win, {
+                await openFiles(win, {
                   name: basename(uri),
                   uri,
                   content,

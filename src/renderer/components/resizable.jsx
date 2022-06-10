@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useContext } from 'react';
 import { styled } from '@mui/material';
 
 import StoreContext from '../context';
@@ -35,7 +35,7 @@ const Resizable = (props) => {
 
   const handleMouseMove = useCallback((e) => {
     const newWidth = e.clientX - document.body.offsetLeft;
-    if (newWidth > 100 && newWidth < 300) {
+    if (newWidth > 100 && newWidth < 400) {
       setFileExplorerWidth(newWidth);
     }
   }, []);

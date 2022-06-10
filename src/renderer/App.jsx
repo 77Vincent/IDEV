@@ -30,10 +30,15 @@ const TitleWrapper = styled('div')`
 `;
 
 const Main = () => {
-  const [fileExplorerWidth, setFileExplorerWidth] = useState(200);
+  const [fileExplorerWidth, setFileExplorerWidth] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(false);
   useEffect(() => {
+    // trigger to get all settings stored
     window.electron.ipcRenderer.send('RENDERER_RELOAD', {});
+    // renderer init
+    window.electron.ipcRenderer.on('RENDERER_INIT', (payload) => {
+      setFileExplorerWidth(payload.fileExplorerWidth);
+    });
     window.electron.ipcRenderer.on('RENDERER_ENTER_FULL_SCREEN', () => {
       setIsFullScreen(true);
     });
@@ -41,11 +46,18 @@ const Main = () => {
       setIsFullScreen(false);
     });
   }, []);
+  useEffect(() => {
+    window.electron.ipcRenderer.send('MAIN_UPDATE_FILE_EXPLORER_WIDTH', {
+      width: fileExplorerWidth,
+    });
+  }, [fileExplorerWidth]);
 
   const Title = () => {
     return (
       <TitleWrapper>
-        <Typography variant="body1">Vimer</Typography>
+        <Typography fontWeight={700} variant="body2">
+          Vimer
+        </Typography>
       </TitleWrapper>
     );
   };

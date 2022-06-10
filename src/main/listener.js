@@ -7,7 +7,12 @@ import {
   RENDERER_RELOAD,
   RENDERER_SET_FILE_SESSIONS,
 } from './actions';
-import { getFileSession, setFileSessions } from './dal';
+import {
+  debouncedPatchSettings,
+  getFileSession,
+  getSettings,
+  setFileSessions,
+} from './dal';
 
 ipcMain.on('MAIN_LOAD_FILE', async (event, { uri }) => {
   const { fileSessions } = getFileSession();
@@ -22,6 +27,9 @@ ipcMain.on('MAIN_LOAD_FILE', async (event, { uri }) => {
   await setFileSessions({ fileSessions });
   event.reply(RENDERER_SET_FILE_SESSIONS, { fileSessions });
 });
+ipcMain.on('MAIN_UPDATE_FILE_EXPLORER_WIDTH', async (event, { width }) => {
+  await debouncedPatchSettings({ fileExplorerWidth: width });
+});
 
 ipcMain.on(MAIN_SAVE_FILE, async (event, { content, name }) => {
   const { fileSessions, openFileSession } = getFileSession();
@@ -29,8 +37,10 @@ ipcMain.on(MAIN_SAVE_FILE, async (event, { content, name }) => {
   await setFileSessions(fileSessions);
 });
 
+// when the window initiates
 ipcMain.on(RENDERER_RELOAD, async (event) => {
   const { fileSessions } = getFileSession();
+  const { fileExplorerWidth } = getSettings();
   // check whether any file is changed
   let changed = false;
   fileSessions.forEach((v) => {
@@ -48,5 +58,6 @@ ipcMain.on(RENDERER_RELOAD, async (event) => {
   if (changed) {
     await setFileSessions({ fileSessions });
   }
+  event.reply('RENDERER_INIT', { fileExplorerWidth });
   event.reply(RENDERER_SET_FILE_SESSIONS, { fileSessions });
 });
