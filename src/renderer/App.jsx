@@ -8,14 +8,12 @@ import Editor from './components/editor';
 import './App.css';
 import theme from './theme/theme';
 
-export const Wrapper = styled('div')`
+const Wrapper = styled('div')`
   position: relative;
-  top: 32px;
   bottom: 0;
   left: 0;
   right: 0;
   width: 100%;
-  height: calc(100vh - 32px);
   overflow: hidden;
 `;
 
@@ -33,7 +31,12 @@ const Main = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Wrapper>
+      <Wrapper
+        style={{
+          top: isFullScreen ? 0 : 32,
+          height: isFullScreen ? '100vh' : 'calc(100vh - 32px)',
+        }}
+      >
         <Editor />
       </Wrapper>
     </ThemeProvider>
