@@ -17,6 +17,7 @@ import storage from 'electron-json-storage';
 import MenuBuilder from './menu';
 import { isDarwin, resolveHtmlPath } from './util';
 import './listener';
+import { enterFullScreen, leaveFullScreen } from './actions';
 
 export default class AppUpdater {
   constructor() {
@@ -31,7 +32,7 @@ const GLOBAL_TEMP_STORAGE = '.global-temp-storage';
 storage.setDataPath(path.join(app.getPath('userData'), GLOBAL_TEMP_STORAGE));
 
 // eslint-disable-next-line import/no-mutable-exports
-export let mainWindow: BrowserWindow | null = null;
+export let win: BrowserWindow | null = null;
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -71,11 +72,12 @@ const createWindow = async () => {
     return path.join(RESOURCES_PATH, ...paths);
   };
 
-  mainWindow = new BrowserWindow({
+  win = new BrowserWindow({
     show: false,
     width: 1200,
     height: 800,
     icon: getAssetPath('icon.png'),
+    titleBarStyle: 'hiddenInset',
     webPreferences: {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
@@ -83,32 +85,39 @@ const createWindow = async () => {
     },
   });
 
-  await mainWindow.loadURL(resolveHtmlPath('index.html'));
+  await win.loadURL(resolveHtmlPath('index.html'));
 
-  mainWindow.on('ready-to-show', () => {
-    if (!mainWindow) {
-      throw new Error('"mainWindow" is not defined');
+  win.on('ready-to-show', () => {
+    if (!win) {
+      throw new Error('"win" is not defined');
     }
     if (process.env.START_MINIMIZED) {
-      mainWindow.minimize();
+      win.minimize();
     } else {
-      mainWindow.show();
+      win.show();
     }
   });
 
-  mainWindow.on('closed', () => {
-    // if (isDarwin()) {
-    //   console.log(33333333333333, mainWindow);
-    //   mainWindow?.hide();
-    // }
-    mainWindow = null;
+  win.on('enter-full-screen', () => {
+    enterFullScreen(win);
+  });
+  win.on('leave-full-screen', () => {
+    leaveFullScreen(win);
   });
 
-  const menuBuilder = new MenuBuilder(mainWindow);
+  win.on('closed', () => {
+    // if (isDarwin()) {
+    //   console.log(33333333333333, win);
+    //   win?.hide();
+    // }
+    win = null;
+  });
+
+  const menuBuilder = new MenuBuilder(win);
   menuBuilder.buildMenu();
 
   // Open urls in the user's browser
-  mainWindow.webContents.setWindowOpenHandler((edata) => {
+  win.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
   });
@@ -137,7 +146,7 @@ app
     app.on('activate', async () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
-      if (mainWindow === null) {
+      if (win === null) {
         await createWindow();
       }
     });

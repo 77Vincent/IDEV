@@ -4,6 +4,8 @@ import { debounce } from './util';
 // renderer
 export const RENDERER_SET_FILE_SESSIONS = 'RENDERER_SET_FILE_SESSIONS';
 export const RENDERER_RELOAD = 'RENDERER_RELOAD';
+export const RENDERER_ENTER_FULL_SCREEN = 'RENDERER_ENTER_FULL_SCREEN';
+export const RENDERER_LEAVE_FULL_SCREEN = 'RENDERER_LEAVE_FULL_SCREEN';
 export const RENDERER_GET_FILE_CONTENT = 'RENDERER_GET_FILE_CONTENT';
 export const EDITOR_LOAD_FILE = 'EDITOR_LOAD_FILE';
 export const EDITOR_FOCUS = 'EDITOR_FOCUS';
@@ -19,6 +21,14 @@ export function notify(win, payload = { code: 0, message: '' }) {
 
 export function getFileContent(win) {
   win.webContents.send(RENDERER_GET_FILE_CONTENT);
+}
+
+export function enterFullScreen(win) {
+  win.webContents.send(RENDERER_ENTER_FULL_SCREEN);
+}
+
+export function leaveFullScreen(win) {
+  win.webContents.send(RENDERER_LEAVE_FULL_SCREEN);
 }
 
 export async function closeOpenFileSession(win) {
