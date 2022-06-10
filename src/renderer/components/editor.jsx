@@ -13,6 +13,7 @@ import '../theme/codemirror.css';
 import '../theme/editor-dark.css';
 import FileInfo from './fileInfo';
 import Tabs from './tabs';
+import StoreContext from '../context';
 
 const TextareaWrapper = styled('div')`
   position: absolute;
@@ -73,17 +74,25 @@ export default class Editor extends React.Component {
   render() {
     const { line, ch } = this.state;
     return (
-      <Box position="relative" height="100%">
-        <Tabs />
-        <TextareaWrapper>
-          <textarea
-            ref={(ref) => {
-              this.textareaNode = ref;
-            }}
-          />
-        </TextareaWrapper>
-        <FileInfo pos={{ line, ch }} />
-      </Box>
+      <StoreContext.Consumer>
+        {({ fileExplorerWidth }) => (
+          <Box
+            style={{ width: `calc(100% - ${fileExplorerWidth}px)` }}
+            position="relative"
+            height="100%"
+          >
+            <Tabs />
+            <TextareaWrapper>
+              <textarea
+                ref={(ref) => {
+                  this.textareaNode = ref;
+                }}
+              />
+            </TextareaWrapper>
+            <FileInfo pos={{ line, ch }} />
+          </Box>
+        )}
+      </StoreContext.Consumer>
     );
   }
 }

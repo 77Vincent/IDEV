@@ -4,6 +4,9 @@ import { styled, ThemeProvider, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import Editor from './components/editor';
+import FileExplorer from './components/explorer';
+import Resizable from './components/resizable';
+import StoreContext from './context';
 // import icon from '../../assets/icon.svg';
 import './App.css';
 import theme from './theme/theme';
@@ -11,6 +14,7 @@ import theme from './theme/theme';
 const TITLE_SPACE = 24;
 
 const Wrapper = styled('div')`
+  display: flex;
   position: relative;
   bottom: 0;
   left: 0;
@@ -26,6 +30,7 @@ const TitleWrapper = styled('div')`
 `;
 
 const Main = () => {
+  const [fileExplorerWidth, setFileExplorerWidth] = useState(200);
   const [isFullScreen, setIsFullScreen] = useState(false);
   useEffect(() => {
     window.electron.ipcRenderer.send('RENDERER_RELOAD', {});
@@ -47,15 +52,25 @@ const Main = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Wrapper
-        style={{
-          top: isFullScreen ? 0 : TITLE_SPACE,
-          height: isFullScreen ? '100vh' : `calc(100vh - ${TITLE_SPACE}px)`,
+      <StoreContext.Provider
+        value={{
+          fileExplorerWidth,
+          setFileExplorerWidth,
         }}
       >
-        <Title />
-        <Editor />
-      </Wrapper>
+        <Wrapper
+          style={{
+            top: isFullScreen ? 0 : TITLE_SPACE,
+            height: isFullScreen ? '100vh' : `calc(100vh - ${TITLE_SPACE}px)`,
+          }}
+        >
+          <Title />
+          <Resizable>
+            <FileExplorer />
+          </Resizable>
+          <Editor />
+        </Wrapper>
+      </StoreContext.Provider>
     </ThemeProvider>
   );
 };
