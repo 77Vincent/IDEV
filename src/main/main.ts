@@ -78,6 +78,7 @@ const createWindow = async () => {
     height: 800,
     icon: getAssetPath('icon.png'),
     titleBarStyle: 'hiddenInset',
+    trafficLightPosition: { x: 5, y: 5 },
     webPreferences: {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
