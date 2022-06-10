@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box } from "@mui/material";
+import { Box } from '@mui/material';
 import CodeMirror from 'codemirror';
 import 'codemirror/addon/edit/closebrackets';
 import 'codemirror/addon/edit/matchbrackets';
@@ -11,11 +11,16 @@ import 'codemirror/mode/jsx/jsx';
 import 'codemirror/keymap/vim';
 import '../theme/codemirror.css';
 import '../theme/editor-dark.css';
+import FileInfo from './fileInfo';
 
 export default class Editor extends React.Component {
   constructor(props) {
     super(props);
     this.textareaNode = React.createRef();
+    this.state = {
+      line: 0,
+      ch: 0,
+    };
   }
 
   componentDidMount() {
@@ -28,7 +33,7 @@ export default class Editor extends React.Component {
       matchtags: true,
       matchBrackets: true,
       keyMap: 'vim',
-      // cursorScrollMargin: 0,
+      cursorScrollMargin: 50,
       styleActiveLine: true,
       value: '',
       extraKeys: {
@@ -38,6 +43,10 @@ export default class Editor extends React.Component {
       },
     });
     editor.setSize('100%', '100%');
+    editor.on('cursorActivity', (cm) => {
+      const { line, ch } = cm.getCursor();
+      this.setState({ line: line + 1, ch: ch + 1 });
+    });
 
     window.electron.ipcRenderer.on('EDITOR_LOAD_FILE', ({ content }) => {
       editor.setValue(content);
@@ -54,14 +63,18 @@ export default class Editor extends React.Component {
   }
 
   render() {
+    const { line, ch } = this.state;
     return (
-      <Box marginTop={2.8} marginBottom={2.8} overflow="auto" flex={1}>
-        <textarea
-          ref={(ref) => {
-            this.textareaNode = ref;
-          }}
-        />
-      </Box>
+      <>
+        <Box marginTop={2.8} marginBottom={2.8} overflow="auto" flex={1}>
+          <textarea
+            ref={(ref) => {
+              this.textareaNode = ref;
+            }}
+          />
+        </Box>
+        <FileInfo pos={{ line, ch }} />
+      </>
     );
   }
 }

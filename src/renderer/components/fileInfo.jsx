@@ -1,5 +1,5 @@
 import { Box, styled, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import PT from 'prop-types';
 
 export const Wrapper = styled('div')(({ theme }) => {
   return {
@@ -16,10 +16,34 @@ export const Wrapper = styled('div')(({ theme }) => {
   };
 });
 
-export default () => {
+const FileInfo = (props) => {
+  const {
+    pos: { line, ch },
+  } = props;
+
   return (
     <Wrapper>
-      <Box display="flex">jjjjjjj</Box>
+      <Box display="flex">
+        <Typography variant="body2">
+          {line}:{ch}
+        </Typography>
+      </Box>
     </Wrapper>
   );
 };
+
+FileInfo.propTypes = {
+  pos: PT.exact({
+    line: PT.number,
+    ch: PT.number,
+  }),
+};
+
+FileInfo.defaultProps = {
+  pos: {
+    line: 0,
+    ch: 0,
+  },
+};
+
+export default FileInfo;

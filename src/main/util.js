@@ -26,7 +26,7 @@ export function isDarwin() {
   return process.platform === 'darwin';
 }
 
-export function debounce(func, timeout = 10) {
+export function debounce(func, timeout = 20) {
   let timer;
   return (...args) => {
     clearTimeout(timer);

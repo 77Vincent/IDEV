@@ -1,5 +1,6 @@
 import { Box, styled, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import PT from 'prop-types';
 
 import { Wrapper } from './common';
 
@@ -53,6 +54,11 @@ export default () => {
         </Box>
       </StyledTab>
     );
+  };
+
+  Tab.propTypes = {
+    name: PT.string,
+    uri: PT.string,
   };
 
   return (

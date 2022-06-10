@@ -1,26 +1,13 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import 'normalize.css';
 import { Box, ThemeProvider } from '@mui/material';
-import { createTheme } from '@mui/material/styles';
-import { green } from '@mui/material/colors';
 import { useEffect } from 'react';
 
 import Editor from './components/editor';
 import Tabs from './components/tabs';
-import FileInfo from './components/fileInfo';
 // import icon from '../../assets/icon.svg';
 import './App.css';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: green[500],
-    },
-    secondary: {
-      main: green[500],
-    },
-  },
-});
+import theme from './theme/theme';
 
 const Hello = () => {
   useEffect(() => {
@@ -37,7 +24,6 @@ const Hello = () => {
       >
         <Tabs />
         <Editor />
-        <FileInfo />
       </Box>
     </ThemeProvider>
   );
