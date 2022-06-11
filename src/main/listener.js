@@ -5,6 +5,8 @@ import {
   EDITOR_LOAD_FILE,
   MAIN_SAVE_FILE,
   RENDERER_SET_FILE_SESSIONS,
+  enterFullScreen,
+  leaveFullScreen,
 } from './actions';
 import {
   debouncedPatchSettings,
@@ -38,7 +40,7 @@ function listener(win) {
   });
 
   // when the window initiates
-  main.on('RENDERER_INIT', async (event) => {
+  main.on('INIT', async (event) => {
     const { fileSessions } = getFileSession();
     const { fileExplorerWidth } = getSettings();
     // check whether any file is changed
@@ -58,8 +60,8 @@ function listener(win) {
     if (changed) {
       await setFileSessions({ fileSessions });
     }
-    event.reply('RENDERER_INIT', { fileExplorerWidth });
-    event.reply(RENDERER_SET_FILE_SESSIONS, { fileSessions });
+    const isFullScreen = win.isFullScreen();
+    event.reply('INIT', { isFullScreen, fileSessions, fileExplorerWidth });
   });
 
   main.on('TOGGLE_MAXIMIZE', () => {

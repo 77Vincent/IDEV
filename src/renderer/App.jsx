@@ -37,8 +37,9 @@ const Main = () => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   useEffect(() => {
     // init
-    window.electron.ipcRenderer.send('RENDERER_INIT', {});
-    window.electron.ipcRenderer.on('RENDERER_INIT', (payload = initState) => {
+    window.electron.ipcRenderer.send('INIT', {});
+    window.electron.ipcRenderer.on('INIT', (payload = initState) => {
+      setIsFullScreen(payload.isFullScreen);
       setFileExplorerWidth(payload.fileExplorerWidth);
       setFileSessions(payload.fileSessions);
     });

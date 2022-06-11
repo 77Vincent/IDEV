@@ -1,6 +1,7 @@
 import { createContext } from 'react';
 
 export const initState = {
+  isFullScreen: false,
   fileExplorerWidth: 100,
   setFileExplorerWidth: () => {},
   fileSessions: [],
