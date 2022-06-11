@@ -22,7 +22,7 @@ function listener(win) {
       v.open = false;
       if (v.uri === uri) {
         v.open = true;
-        event.reply(EDITOR_LOAD_FILE, { content: v.content });
+        event.reply(EDITOR_LOAD_FILE, { uri, content: v.content });
       }
     }
     await setFileSessions({ fileSessions });

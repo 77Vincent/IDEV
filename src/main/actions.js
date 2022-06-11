@@ -32,14 +32,15 @@ export function leaveFullScreen(win) {
 }
 
 export async function closeOpenFileSession(win) {
-  const { fileSessions } = getFileSession();
-  const len = fileSessions.length;
+  const { fileSessions: fss } = getFileSession();
+  const len = fss.length;
   let content = '';
+  let uri = '';
   let j = 0;
   for (let i = 0; i < len; i += 1) {
-    const v = fileSessions[i];
+    const v = fss[i];
     if (v.open === true) {
-      fileSessions.splice(i, 1);
+      fss.splice(i, 1);
       j = i;
       break;
     }
@@ -47,69 +48,55 @@ export async function closeOpenFileSession(win) {
   // load the sibling file only when there were more than 1 file before
   if (len > 1) {
     j = j === len - 1 ? j - 1 : j;
-    fileSessions[j].open = true;
-    content = fileSessions[j].content;
+    fss[j].open = true;
+    content = fss[j].content;
+    uri = fss[j].uri;
   }
   // update local storage
-  await setFileSessions({ fileSessions });
+  await setFileSessions({ fileSessions: fss });
   // update renderer
-  win.webContents.send(SET_FILE_SESSIONS, { fileSessions });
-  win.webContents.send(EDITOR_LOAD_FILE, { content });
+  win.webContents.send(SET_FILE_SESSIONS, { fileSessions: fss });
+  win.webContents.send(EDITOR_LOAD_FILE, { content, uri });
 }
 
-async function previousFile(win) {
-  const { fileSessions } = getFileSession();
-  const len = fileSessions.length;
-  let content = null;
+async function fileSessionsNavigate(win, next = true) {
+  const { fileSessions: fss } = getFileSession();
+  const len = fss.length;
+  let uri = '';
+  let content = '';
   for (let i = 0; i < len; i += 1) {
-    const v = fileSessions[i];
+    const v = fss[i];
     if (v.open === true) {
+      // goto next file
+      if (next) {
+        if (i !== len - 1) {
+          v.open = false;
+          fss[i + 1].open = true;
+          uri = fss[i + 1].uri;
+          content = fss[i + 1].content;
+        }
+        break;
+      }
+      // goto previous file
       if (i !== 0) {
         v.open = false;
-        fileSessions[i - 1].open = true;
-        content = fileSessions[i - 1].content;
+        fss[i - 1].open = true;
+        uri = fss[i - 1].uri;
+        content = fss[i - 1].content;
       }
       break;
     }
   }
-  try {
-    await setFileSessions({ fileSessions });
-  } catch (e) {
-    console.log(e);
-    return Promise.reject();
-  }
-  if (content !== null) {
-    win.webContents.send(EDITOR_LOAD_FILE, { content });
-  }
-  win.webContents.send(SET_FILE_SESSIONS, { fileSessions });
-  return Promise.resolve();
-}
-
-async function nextFile(win) {
-  const { fileSessions } = getFileSession();
-  const len = fileSessions.length;
-  let content = null;
-  for (let i = 0; i < len; i += 1) {
-    const v = fileSessions[i];
-    if (v.open === true) {
-      if (i !== len - 1) {
-        v.open = false;
-        fileSessions[i + 1].open = true;
-        content = fileSessions[i + 1].content;
-      }
-      break;
+  // only update when there is new file to be opened
+  if (uri) {
+    try {
+      await setFileSessions({ fileSessions: fss });
+    } catch (e) {
+      return Promise.reject(e);
     }
+    win.webContents.send(EDITOR_LOAD_FILE, { content, uri });
+    win.webContents.send(SET_FILE_SESSIONS, { fileSessions: fss });
   }
-  try {
-    await setFileSessions({ fileSessions });
-  } catch (e) {
-    console.log(e);
-    return Promise.reject();
-  }
-  if (content !== null) {
-    win.webContents.send(EDITOR_LOAD_FILE, { content });
-  }
-  win.webContents.send(SET_FILE_SESSIONS, { fileSessions });
   return Promise.resolve();
 }
 
@@ -117,8 +104,10 @@ export function editorFocus(win) {
   win.webContents.send(EDITOR_FOCUS);
 }
 
-export const debouncedPreviousFile = debounce((win) => previousFile(win));
-export const debouncedNextFile = debounce((win) => nextFile(win));
+export const debouncedPreviousFile = debounce((win) =>
+  fileSessionsNavigate(win, false)
+);
+export const debouncedNextFile = debounce((win) => fileSessionsNavigate(win));
 export const debouncedEditorFocus = debounce((win) => editorFocus(win));
 
 export async function openFiles(
