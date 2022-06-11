@@ -57,7 +57,7 @@ export default class Editor extends React.Component {
     editor.on('cursorActivity', (cm) => {
       const { setCursorPos } = this.context;
       const { line, ch } = cm.getCursor();
-      setCursorPos({ line: line + 1, ch: ch + 1 });
+      setCursorPos({ line, ch });
     });
 
     window.electron.ipcRenderer.on(
