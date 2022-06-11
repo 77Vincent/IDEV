@@ -1,8 +1,9 @@
 import { Box, styled, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import PT from 'prop-types';
 
 import { Wrapper } from './common';
+import StoreContext from '../context';
 
 const StyledWrapper = styled(Wrapper)`
   top: 0;
@@ -12,7 +13,7 @@ const StyledWrapper = styled(Wrapper)`
 `;
 
 export default () => {
-  const [fileSessions, setFileSessions] = useState([]);
+  const { fileSessions, setFileSessions } = useContext(StoreContext);
 
   useEffect(() => {
     window.electron.ipcRenderer.on(

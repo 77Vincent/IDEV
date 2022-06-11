@@ -4,7 +4,6 @@ import { readFileSync } from 'fs';
 import {
   EDITOR_LOAD_FILE,
   MAIN_SAVE_FILE,
-  RENDERER_RELOAD,
   RENDERER_SET_FILE_SESSIONS,
 } from './actions';
 import {
@@ -38,7 +37,7 @@ ipcMain.on(MAIN_SAVE_FILE, async (event, { content, name }) => {
 });
 
 // when the window initiates
-ipcMain.on(RENDERER_RELOAD, async (event) => {
+ipcMain.on('RENDERER_INIT', async (event) => {
   const { fileSessions } = getFileSession();
   const { fileExplorerWidth } = getSettings();
   // check whether any file is changed

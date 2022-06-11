@@ -31,13 +31,14 @@ const TitleWrapper = styled('div')`
 
 const Main = () => {
   const [fileExplorerWidth, setFileExplorerWidth] = useState(0);
+  const [fileSessions, setFileSessions] = useState([]);
   const [isFullScreen, setIsFullScreen] = useState(false);
   useEffect(() => {
-    // trigger to get all settings stored
-    window.electron.ipcRenderer.send('RENDERER_RELOAD', {});
-    // renderer init
-    window.electron.ipcRenderer.on('RENDERER_INIT', (payload) => {
+    // init
+    window.electron.ipcRenderer.send('RENDERER_INIT', {});
+    window.electron.ipcRenderer.on('RENDERER_INIT', (payload = {}) => {
       setFileExplorerWidth(payload.fileExplorerWidth);
+      setFileSessions(payload.fileSessions);
     });
     window.electron.ipcRenderer.on('RENDERER_ENTER_FULL_SCREEN', () => {
       setIsFullScreen(true);
@@ -68,6 +69,8 @@ const Main = () => {
         value={{
           fileExplorerWidth,
           setFileExplorerWidth,
+          fileSessions,
+          setFileSessions,
         }}
       >
         <Wrapper
