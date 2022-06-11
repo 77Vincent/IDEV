@@ -63,7 +63,9 @@ const Main = () => {
   const Title = () => {
     return (
       <TitleWrapper
-        onDoubleClick={() => window.electron.ipcRenderer.send('MAXIMIZE', {})}
+        onDoubleClick={() =>
+          window.electron.ipcRenderer.send('TOGGLE_MAXIMIZE', {})
+        }
       >
         <Typography fontWeight={700} variant="body2">
           Vimer

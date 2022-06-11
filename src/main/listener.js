@@ -1,4 +1,4 @@
-import { ipcMain } from 'electron';
+import { ipcMain as main } from 'electron';
 import { readFileSync } from 'fs';
 
 import {
@@ -14,7 +14,7 @@ import {
 } from './dal';
 
 function listener(win) {
-  ipcMain.on('MAIN_LOAD_FILE', async (event, { uri }) => {
+  main.on('MAIN_LOAD_FILE', async (event, { uri }) => {
     const { fileSessions } = getFileSession();
     for (let i = 0; i < fileSessions.length; i += 1) {
       const v = fileSessions[i];
@@ -27,18 +27,18 @@ function listener(win) {
     await setFileSessions({ fileSessions });
     event.reply(RENDERER_SET_FILE_SESSIONS, { fileSessions });
   });
-  ipcMain.on('MAIN_UPDATE_FILE_EXPLORER_WIDTH', async (event, { width }) => {
+  main.on('MAIN_UPDATE_FILE_EXPLORER_WIDTH', async (event, { width }) => {
     await debouncedPatchSettings({ fileExplorerWidth: width });
   });
 
-  ipcMain.on(MAIN_SAVE_FILE, async (event, { content, name }) => {
+  main.on(MAIN_SAVE_FILE, async (event, { content, name }) => {
     const { fileSessions, openFileSession } = getFileSession();
     fileSessions[openFileSession].content = content;
     await setFileSessions(fileSessions);
   });
 
   // when the window initiates
-  ipcMain.on('RENDERER_INIT', async (event) => {
+  main.on('RENDERER_INIT', async (event) => {
     const { fileSessions } = getFileSession();
     const { fileExplorerWidth } = getSettings();
     // check whether any file is changed
@@ -60,6 +60,14 @@ function listener(win) {
     }
     event.reply('RENDERER_INIT', { fileExplorerWidth });
     event.reply(RENDERER_SET_FILE_SESSIONS, { fileSessions });
+  });
+
+  main.on('TOGGLE_MAXIMIZE', () => {
+    if (win.isMaximized()) {
+      win.unmaximize();
+    } else {
+      win.maximize();
+    }
   });
 }
 
