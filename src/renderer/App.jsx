@@ -10,6 +10,13 @@ import StoreContext, { initState } from './context';
 // import icon from '../../assets/icon.svg';
 import './App.css';
 import theme from './theme/theme';
+import {
+  ENTER_FULL_SCREEN,
+  INIT,
+  LEAVE_FULL_SCREEN,
+  TOGGLE_MAXIMIZE,
+  UPDATE_FILE_EXPLORER_WIDTH,
+} from './const';
 
 const TITLE_SPACE = 24;
 
@@ -37,16 +44,16 @@ const Main = () => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   useEffect(() => {
     // init
-    window.electron.ipcRenderer.send('INIT', {});
-    window.electron.ipcRenderer.on('INIT', (payload = initState) => {
+    window.electron.ipcRenderer.send(INIT, {});
+    window.electron.ipcRenderer.on(INIT, (payload = initState) => {
       setIsFullScreen(payload.isFullScreen);
       setFileExplorerWidth(payload.fileExplorerWidth);
       setFileSessions(payload.fileSessions);
     });
-    window.electron.ipcRenderer.on('ENTER_FULL_SCREEN', () => {
+    window.electron.ipcRenderer.on(ENTER_FULL_SCREEN, () => {
       setIsFullScreen(true);
     });
-    window.electron.ipcRenderer.on('LEAVE_FULL_SCREEN', () => {
+    window.electron.ipcRenderer.on(LEAVE_FULL_SCREEN, () => {
       setIsFullScreen(false);
     });
     window.electron.ipcRenderer.on(
@@ -57,7 +64,7 @@ const Main = () => {
     );
   }, []);
   useEffect(() => {
-    window.electron.ipcRenderer.send('MAIN_UPDATE_FILE_EXPLORER_WIDTH', {
+    window.electron.ipcRenderer.send(UPDATE_FILE_EXPLORER_WIDTH, {
       width: fileExplorerWidth,
     });
   }, [fileExplorerWidth]);
@@ -66,7 +73,7 @@ const Main = () => {
     return (
       <TitleWrapper
         onDoubleClick={() =>
-          window.electron.ipcRenderer.send('TOGGLE_MAXIMIZE', {})
+          window.electron.ipcRenderer.send(TOGGLE_MAXIMIZE, {})
         }
       >
         <Typography fontWeight={700} variant="body2">

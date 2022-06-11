@@ -32,7 +32,13 @@ export const debouncedPatchSettings = debounce(
   100
 );
 
-export async function upsertFileSessions(payload = {}) {
+export async function upsertFileSessions(
+  payload = {
+    uri: '',
+    name: '',
+    content: '',
+  }
+) {
   const { fileSessions } = getFileSession();
   let found = false;
   payload.open = true;

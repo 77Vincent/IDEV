@@ -28,7 +28,7 @@ function listener(win) {
     await setFileSessions({ fileSessions });
     event.reply(SET_FILE_SESSIONS, { fileSessions });
   });
-  main.on('MAIN_UPDATE_FILE_EXPLORER_WIDTH', async (event, { width }) => {
+  main.on('UPDATE_FILE_EXPLORER_WIDTH', async (event, { width }) => {
     await debouncedPatchSettings({ fileExplorerWidth: width });
   });
 
