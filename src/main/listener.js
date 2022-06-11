@@ -4,9 +4,7 @@ import { readFileSync } from 'fs';
 import {
   EDITOR_LOAD_FILE,
   MAIN_SAVE_FILE,
-  RENDERER_SET_FILE_SESSIONS,
-  enterFullScreen,
-  leaveFullScreen,
+  SET_FILE_SESSIONS,
 } from './actions';
 import {
   debouncedPatchSettings,
@@ -27,7 +25,7 @@ function listener(win) {
       }
     }
     await setFileSessions({ fileSessions });
-    event.reply(RENDERER_SET_FILE_SESSIONS, { fileSessions });
+    event.reply(SET_FILE_SESSIONS, { fileSessions });
   });
   main.on('MAIN_UPDATE_FILE_EXPLORER_WIDTH', async (event, { width }) => {
     await debouncedPatchSettings({ fileExplorerWidth: width });

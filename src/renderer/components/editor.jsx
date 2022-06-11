@@ -65,7 +65,7 @@ export default class Editor extends React.Component {
       editor.focus();
     });
 
-    window.electron.ipcRenderer.on('RENDERER_GET_FILE_CONTENT', () => {
+    window.electron.ipcRenderer.on('GET_FILE_CONTENT', () => {
       const content = editor.getValue();
       window.electron.ipcRenderer.send('MAIN_SAVE_FILE', { content });
     });

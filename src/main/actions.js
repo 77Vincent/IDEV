@@ -2,10 +2,10 @@ import { getFileSession, upsertFileSessions, setFileSessions } from './dal';
 import { debounce } from './util';
 
 // renderer
-export const RENDERER_SET_FILE_SESSIONS = 'RENDERER_SET_FILE_SESSIONS';
-export const RENDERER_ENTER_FULL_SCREEN = 'RENDERER_ENTER_FULL_SCREEN';
-export const RENDERER_LEAVE_FULL_SCREEN = 'RENDERER_LEAVE_FULL_SCREEN';
-export const RENDERER_GET_FILE_CONTENT = 'RENDERER_GET_FILE_CONTENT';
+export const SET_FILE_SESSIONS = 'SET_FILE_SESSIONS';
+export const ENTER_FULL_SCREEN = 'ENTER_FULL_SCREEN';
+export const LEAVE_FULL_SCREEN = 'LEAVE_FULL_SCREEN';
+export const GET_FILE_CONTENT = 'GET_FILE_CONTENT';
 export const EDITOR_LOAD_FILE = 'EDITOR_LOAD_FILE';
 export const EDITOR_FOCUS = 'EDITOR_FOCUS';
 
@@ -19,15 +19,15 @@ export function notify(win, payload = { code: 0, message: '' }) {
 }
 
 export function getFileContent(win) {
-  win.webContents.send(RENDERER_GET_FILE_CONTENT);
+  win.webContents.send(GET_FILE_CONTENT);
 }
 
 export function enterFullScreen(win) {
-  win.webContents.send(RENDERER_ENTER_FULL_SCREEN);
+  win.webContents.send(ENTER_FULL_SCREEN);
 }
 
 export function leaveFullScreen(win) {
-  win.webContents.send(RENDERER_LEAVE_FULL_SCREEN);
+  win.webContents.send(LEAVE_FULL_SCREEN);
 }
 
 export async function closeOpenFileSession(win) {
@@ -52,7 +52,7 @@ export async function closeOpenFileSession(win) {
   // update local storage
   await setFileSessions({ fileSessions });
   // update renderer
-  win.webContents.send(RENDERER_SET_FILE_SESSIONS, { fileSessions });
+  win.webContents.send(SET_FILE_SESSIONS, { fileSessions });
   win.webContents.send(EDITOR_LOAD_FILE, { content });
 }
 
@@ -80,7 +80,7 @@ async function previousFile(win) {
   if (content !== null) {
     win.webContents.send(EDITOR_LOAD_FILE, { content });
   }
-  win.webContents.send(RENDERER_SET_FILE_SESSIONS, { fileSessions });
+  win.webContents.send(SET_FILE_SESSIONS, { fileSessions });
   return Promise.resolve();
 }
 
@@ -108,7 +108,7 @@ async function nextFile(win) {
   if (content !== null) {
     win.webContents.send(EDITOR_LOAD_FILE, { content });
   }
-  win.webContents.send(RENDERER_SET_FILE_SESSIONS, { fileSessions });
+  win.webContents.send(SET_FILE_SESSIONS, { fileSessions });
   return Promise.resolve();
 }
 
@@ -128,7 +128,7 @@ export async function openFiles(
   // update local storage
   const { fileSessions } = await upsertFileSessions(payload);
   // update renderer
-  win.webContents.send(RENDERER_SET_FILE_SESSIONS, { fileSessions });
+  win.webContents.send(SET_FILE_SESSIONS, { fileSessions });
   win.webContents.send(EDITOR_LOAD_FILE, { content });
 }
 

@@ -43,14 +43,14 @@ const Main = () => {
       setFileExplorerWidth(payload.fileExplorerWidth);
       setFileSessions(payload.fileSessions);
     });
-    window.electron.ipcRenderer.on('RENDERER_ENTER_FULL_SCREEN', () => {
+    window.electron.ipcRenderer.on('ENTER_FULL_SCREEN', () => {
       setIsFullScreen(true);
     });
-    window.electron.ipcRenderer.on('RENDERER_LEAVE_FULL_SCREEN', () => {
+    window.electron.ipcRenderer.on('LEAVE_FULL_SCREEN', () => {
       setIsFullScreen(false);
     });
     window.electron.ipcRenderer.on(
-      'RENDERER_SET_FILE_SESSIONS',
+      'SET_FILE_SESSIONS',
       ({ fileSessions: fileSessionsInput }) => {
         setFileSessions([...fileSessionsInput]);
       }
