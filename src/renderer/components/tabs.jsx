@@ -1,5 +1,5 @@
 import { Box, styled, Typography } from '@mui/material';
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import PT from 'prop-types';
 
 import { Wrapper } from './common';
@@ -13,16 +13,7 @@ const StyledWrapper = styled(Wrapper)`
 `;
 
 export default () => {
-  const { fileSessions, setFileSessions } = useContext(StoreContext);
-
-  useEffect(() => {
-    window.electron.ipcRenderer.on(
-      'RENDERER_SET_FILE_SESSIONS',
-      ({ fileSessions: fileSessionsInput }) => {
-        setFileSessions([...fileSessionsInput]);
-      }
-    );
-  }, []);
+  const { fileSessions } = useContext(StoreContext);
 
   const Tab = (props) => {
     const { name, uri } = props;

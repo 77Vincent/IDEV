@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import Editor from './components/editor';
 import FileExplorer from './components/explorer';
 import Resizable from './components/resizable';
-import StoreContext from './context';
+import StoreContext, { initState } from './context';
 // import icon from '../../assets/icon.svg';
 import './App.css';
 import theme from './theme/theme';
@@ -36,7 +36,7 @@ const Main = () => {
   useEffect(() => {
     // init
     window.electron.ipcRenderer.send('RENDERER_INIT', {});
-    window.electron.ipcRenderer.on('RENDERER_INIT', (payload = {}) => {
+    window.electron.ipcRenderer.on('RENDERER_INIT', (payload = initState) => {
       setFileExplorerWidth(payload.fileExplorerWidth);
       setFileSessions(payload.fileSessions);
     });
@@ -46,6 +46,12 @@ const Main = () => {
     window.electron.ipcRenderer.on('RENDERER_LEAVE_FULL_SCREEN', () => {
       setIsFullScreen(false);
     });
+    window.electron.ipcRenderer.on(
+      'RENDERER_SET_FILE_SESSIONS',
+      ({ fileSessions: fileSessionsInput }) => {
+        setFileSessions([...fileSessionsInput]);
+      }
+    );
   }, []);
   useEffect(() => {
     window.electron.ipcRenderer.send('MAIN_UPDATE_FILE_EXPLORER_WIDTH', {
