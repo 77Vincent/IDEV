@@ -11,6 +11,7 @@ const StyledWrapper = styled(Wrapper)`
 
 const FileInfo = (props) => {
   const {
+    uri,
     pos: { line, ch },
   } = props;
 
@@ -20,12 +21,15 @@ const FileInfo = (props) => {
         <Typography variant="body2">
           {line}:{ch}
         </Typography>
+
+        <Typography variant="body2">{uri}</Typography>
       </Box>
     </StyledWrapper>
   );
 };
 
 FileInfo.propTypes = {
+  uri: PT.string,
   pos: PT.exact({
     line: PT.number,
     ch: PT.number,
@@ -33,6 +37,7 @@ FileInfo.propTypes = {
 };
 
 FileInfo.defaultProps = {
+  uri: '',
   pos: {
     line: 0,
     ch: 0,

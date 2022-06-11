@@ -53,7 +53,7 @@ function listener(win) {
         changed = true;
       }
       if (v.open) {
-        event.reply(EDITOR_LOAD_FILE, { content });
+        event.reply(EDITOR_LOAD_FILE, { content, uri });
       }
     });
     if (changed) {

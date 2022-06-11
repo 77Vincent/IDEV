@@ -27,10 +27,6 @@ export default class Editor extends React.Component {
   constructor(props) {
     super(props);
     this.textareaNode = React.createRef();
-    this.state = {
-      line: 0,
-      ch: 0,
-    };
   }
 
   componentDidMount() {
@@ -54,12 +50,17 @@ export default class Editor extends React.Component {
     });
     editor.setSize('100%', '100%');
     editor.on('cursorActivity', (cm) => {
+      const { setCursorPos } = this.context;
       const { line, ch } = cm.getCursor();
-      this.setState({ line: line + 1, ch: ch + 1 });
+      setCursorPos({ line: line + 1, ch: ch + 1 });
     });
 
-    window.electron.ipcRenderer.on(EDITOR_LOAD_FILE, ({ content }) => {
+    window.electron.ipcRenderer.on(EDITOR_LOAD_FILE, ({ content, uri }) => {
       editor.setValue(content);
+      this.setState((prev) => ({
+        ...prev,
+        uri,
+      }));
     });
 
     window.electron.ipcRenderer.on(EDITOR_FOCUS, () => {
@@ -73,7 +74,9 @@ export default class Editor extends React.Component {
   }
 
   render() {
-    const { line, ch } = this.state;
+    const {
+      cursorPos: { line, ch },
+    } = this.context;
     return (
       <StoreContext.Consumer>
         {({ fileExplorerWidth }) => (
@@ -97,3 +100,5 @@ export default class Editor extends React.Component {
     );
   }
 }
+
+Editor.contextType = StoreContext;

@@ -42,6 +42,19 @@ const Main = () => {
   const [fileExplorerWidth, setFileExplorerWidth] = useState(0);
   const [fileSessions, setFileSessions] = useState([]);
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [cursorPos, setCursorPos] = useState({
+    line: 1,
+    ch: 1,
+  });
+  const contextValue = {
+    fileExplorerWidth,
+    setFileExplorerWidth,
+    fileSessions,
+    setFileSessions,
+    isFullScreen,
+    cursorPos,
+    setCursorPos,
+  };
   useEffect(() => {
     // init
     window.electron.ipcRenderer.send(INIT, {});
@@ -85,15 +98,7 @@ const Main = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <StoreContext.Provider
-        value={{
-          fileExplorerWidth,
-          setFileExplorerWidth,
-          fileSessions,
-          setFileSessions,
-          isFullScreen,
-        }}
-      >
+      <StoreContext.Provider value={contextValue}>
         <Wrapper
           style={{
             top: isFullScreen ? 0 : TITLE_SPACE,

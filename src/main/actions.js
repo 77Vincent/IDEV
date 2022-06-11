@@ -114,12 +114,12 @@ export async function openFiles(
   win,
   payload = { uri: '', name: '', content: '' }
 ) {
-  const { content } = payload;
+  const { content, uri } = payload;
   // update local storage
   const { fileSessions } = await upsertFileSessions(payload);
   // update renderer
   win.webContents.send(SET_FILE_SESSIONS, { fileSessions });
-  win.webContents.send(EDITOR_LOAD_FILE, { content });
+  win.webContents.send(EDITOR_LOAD_FILE, { content, uri });
 }
 
 export function openDirs(win, payload) {
