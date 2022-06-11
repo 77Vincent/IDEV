@@ -2,6 +2,7 @@ import { getFileSession, upsertFileSessions, setFileSessions } from './dal';
 import { debounce } from './util';
 
 // renderer
+export const INIT = 'INIT';
 export const SET_FILE_SESSIONS = 'SET_FILE_SESSIONS';
 export const ENTER_FULL_SCREEN = 'ENTER_FULL_SCREEN';
 export const LEAVE_FULL_SCREEN = 'LEAVE_FULL_SCREEN';

@@ -84,6 +84,7 @@ const Main = () => {
           setFileExplorerWidth,
           fileSessions,
           setFileSessions,
+          isFullScreen,
         }}
       >
         <Wrapper

@@ -4,6 +4,7 @@ import PT from 'prop-types';
 
 import { Wrapper } from './common';
 import StoreContext from '../context';
+import { EDITOR_LOAD_FILE } from '../const';
 
 const StyledWrapper = styled(Wrapper)`
   top: 0;
@@ -27,7 +28,7 @@ export default () => {
         paddingLeft={1}
         paddingRight={1}
         onClick={() => {
-          window.electron.ipcRenderer.send('MAIN_LOAD_FILE', { uri });
+          window.electron.ipcRenderer.send(EDITOR_LOAD_FILE, { uri });
         }}
         {...props}
       >

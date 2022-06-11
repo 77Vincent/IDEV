@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 
 import {
   EDITOR_LOAD_FILE,
+  INIT,
   MAIN_SAVE_FILE,
   SET_FILE_SESSIONS,
 } from './actions';
@@ -14,7 +15,7 @@ import {
 } from './dal';
 
 function listener(win) {
-  main.on('MAIN_LOAD_FILE', async (event, { uri }) => {
+  main.on(EDITOR_LOAD_FILE, async (event, { uri }) => {
     const { fileSessions } = getFileSession();
     for (let i = 0; i < fileSessions.length; i += 1) {
       const v = fileSessions[i];
@@ -38,7 +39,7 @@ function listener(win) {
   });
 
   // when the window initiates
-  main.on('INIT', async (event) => {
+  main.on(INIT, async (event) => {
     const { fileSessions } = getFileSession();
     const { fileExplorerWidth } = getSettings();
     // check whether any file is changed
@@ -59,7 +60,7 @@ function listener(win) {
       await setFileSessions({ fileSessions });
     }
     const isFullScreen = win.isFullScreen();
-    event.reply('INIT', { isFullScreen, fileSessions, fileExplorerWidth });
+    event.reply(INIT, { isFullScreen, fileSessions, fileExplorerWidth });
   });
 
   main.on('TOGGLE_MAXIMIZE', () => {

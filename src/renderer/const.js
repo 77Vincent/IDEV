@@ -1,0 +1,2 @@
+export const EDITOR_LOAD_FILE = 'EDITOR_LOAD_FILE';
+export const EDITOR_FOCUS = 'EDITOR_FOCUS';

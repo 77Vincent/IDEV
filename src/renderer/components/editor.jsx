@@ -14,6 +14,7 @@ import '../theme/editor-dark.css';
 import FileInfo from './fileInfo';
 import Tabs from './tabs';
 import StoreContext from '../context';
+import { EDITOR_FOCUS, EDITOR_LOAD_FILE } from '../const';
 
 const TextareaWrapper = styled('div')`
   position: absolute;
@@ -57,11 +58,11 @@ export default class Editor extends React.Component {
       this.setState({ line: line + 1, ch: ch + 1 });
     });
 
-    window.electron.ipcRenderer.on('EDITOR_LOAD_FILE', ({ content }) => {
+    window.electron.ipcRenderer.on(EDITOR_LOAD_FILE, ({ content }) => {
       editor.setValue(content);
     });
 
-    window.electron.ipcRenderer.on('EDITOR_FOCUS', () => {
+    window.electron.ipcRenderer.on(EDITOR_FOCUS, () => {
       editor.focus();
     });
 
