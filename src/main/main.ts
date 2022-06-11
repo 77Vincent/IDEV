@@ -16,7 +16,7 @@ import storage from 'electron-json-storage';
 
 import MenuBuilder from './menu';
 import { isDarwin, resolveHtmlPath } from './util';
-import './listener';
+import listener from './listener';
 import { enterFullScreen, leaveFullScreen } from './actions';
 
 export default class AppUpdater {
@@ -114,6 +114,9 @@ const createWindow = async () => {
     win = null;
   });
 
+  // register even listeners
+  listener(win);
+  // build menu
   const menuBuilder = new MenuBuilder(win);
   menuBuilder.buildMenu();
 

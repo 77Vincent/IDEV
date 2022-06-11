@@ -20,6 +20,7 @@ const Wrapper = styled('div')`
   left: 0;
   right: 0;
   width: 100%;
+  user-select: none;
 `;
 
 const TitleWrapper = styled('div')`
@@ -61,7 +62,9 @@ const Main = () => {
 
   const Title = () => {
     return (
-      <TitleWrapper>
+      <TitleWrapper
+        onDoubleClick={() => window.electron.ipcRenderer.send('MAXIMIZE', {})}
+      >
         <Typography fontWeight={700} variant="body2">
           Vimer
         </Typography>
