@@ -4,7 +4,7 @@ import PT from 'prop-types';
 
 import { Wrapper } from './common';
 import StoreContext from '../context';
-import { EDITOR_LOAD_FILE } from '../const';
+import { EDITOR_LOAD_FILE } from '../actions';
 
 const StyledWrapper = styled(Wrapper)`
   top: 0;

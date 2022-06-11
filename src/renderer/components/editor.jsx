@@ -14,7 +14,12 @@ import '../theme/editor-dark.css';
 import FileInfo from './fileInfo';
 import Tabs from './tabs';
 import StoreContext from '../context';
-import { EDITOR_FOCUS, EDITOR_LOAD_FILE, GET_FILE_CONTENT } from '../const';
+import {
+  defaultFileSessionPayload,
+  EDITOR_FOCUS,
+  EDITOR_LOAD_FILE,
+  GET_FILE_CONTENT,
+} from '../actions';
 
 const TextareaWrapper = styled('div')`
   position: absolute;
@@ -55,13 +60,18 @@ export default class Editor extends React.Component {
       setCursorPos({ line: line + 1, ch: ch + 1 });
     });
 
-    window.electron.ipcRenderer.on(EDITOR_LOAD_FILE, ({ content, uri }) => {
-      editor.setValue(content);
-      this.setState((prev) => ({
-        ...prev,
-        uri,
-      }));
-    });
+    window.electron.ipcRenderer.on(
+      EDITOR_LOAD_FILE,
+      (payload = defaultFileSessionPayload) => {
+        const { content, uri, cursorPos } = payload;
+        const { setOpenFileUri } = this.context;
+        editor.setValue(content);
+        if (cursorPos) {
+          editor.setCursor(cursorPos);
+        }
+        setOpenFileUri(uri);
+      }
+    );
 
     window.electron.ipcRenderer.on(EDITOR_FOCUS, () => {
       editor.focus();
@@ -75,6 +85,7 @@ export default class Editor extends React.Component {
 
   render() {
     const {
+      openFileUri,
       cursorPos: { line, ch },
     } = this.context;
     return (
@@ -93,7 +104,7 @@ export default class Editor extends React.Component {
                 }}
               />
             </TextareaWrapper>
-            <FileInfo pos={{ line, ch }} />
+            <FileInfo uri={openFileUri} pos={{ line, ch }} />
           </Box>
         )}
       </StoreContext.Consumer>

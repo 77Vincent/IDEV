@@ -11,12 +11,14 @@ import StoreContext, { initState } from './context';
 import './App.css';
 import theme from './theme/theme';
 import {
+  debouncedUpdateFileSessionsAction,
+  SET_FILE_SESSIONS,
   ENTER_FULL_SCREEN,
   INIT,
   LEAVE_FULL_SCREEN,
   TOGGLE_MAXIMIZE,
   UPDATE_FILE_EXPLORER_WIDTH,
-} from './const';
+} from './actions';
 
 const TITLE_SPACE = 24;
 
@@ -40,6 +42,7 @@ const TitleWrapper = styled('div')`
 
 const Main = () => {
   const [fileExplorerWidth, setFileExplorerWidth] = useState(0);
+  const [openFileUri, setOpenFileUri] = useState('');
   const [fileSessions, setFileSessions] = useState([]);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [cursorPos, setCursorPos] = useState({
@@ -52,6 +55,8 @@ const Main = () => {
     fileSessions,
     setFileSessions,
     isFullScreen,
+    openFileUri,
+    setOpenFileUri,
     cursorPos,
     setCursorPos,
   };
@@ -63,24 +68,37 @@ const Main = () => {
       setFileExplorerWidth(payload.fileExplorerWidth);
       setFileSessions(payload.fileSessions);
     });
+
     window.electron.ipcRenderer.on(ENTER_FULL_SCREEN, () => {
       setIsFullScreen(true);
     });
     window.electron.ipcRenderer.on(LEAVE_FULL_SCREEN, () => {
       setIsFullScreen(false);
     });
+
     window.electron.ipcRenderer.on(
-      'SET_FILE_SESSIONS',
+      SET_FILE_SESSIONS,
       ({ fileSessions: fileSessionsInput }) => {
         setFileSessions([...fileSessionsInput]);
       }
     );
   }, []);
+
   useEffect(() => {
     window.electron.ipcRenderer.send(UPDATE_FILE_EXPLORER_WIDTH, {
       width: fileExplorerWidth,
     });
   }, [fileExplorerWidth]);
+
+  // update cursor position
+  useEffect(() => {
+    if (openFileUri !== '') {
+      debouncedUpdateFileSessionsAction({
+        uri: openFileUri,
+        cursorPos,
+      });
+    }
+  }, [cursorPos, openFileUri]);
 
   const Title = () => {
     return (

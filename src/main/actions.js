@@ -3,6 +3,7 @@ import { debounce } from './util';
 
 // renderer
 export const INIT = 'INIT';
+export const PATCH_FILE_SESSIONS = 'PATCH_FILE_SESSIONS';
 export const SET_FILE_SESSIONS = 'SET_FILE_SESSIONS';
 export const ENTER_FULL_SCREEN = 'ENTER_FULL_SCREEN';
 export const LEAVE_FULL_SCREEN = 'LEAVE_FULL_SCREEN';
@@ -34,8 +35,6 @@ export function leaveFullScreen(win) {
 export async function closeOpenFileSession(win) {
   const { fileSessions: fss } = getFileSession();
   const len = fss.length;
-  let content = '';
-  let uri = '';
   let j = 0;
   for (let i = 0; i < len; i += 1) {
     const v = fss[i];
@@ -49,20 +48,19 @@ export async function closeOpenFileSession(win) {
   if (len > 1) {
     j = j === len - 1 ? j - 1 : j;
     fss[j].open = true;
-    content = fss[j].content;
-    uri = fss[j].uri;
   }
   // update local storage
   await setFileSessions({ fileSessions: fss });
   // update renderer
   win.webContents.send(SET_FILE_SESSIONS, { fileSessions: fss });
-  win.webContents.send(EDITOR_LOAD_FILE, { content, uri });
+  win.webContents.send(EDITOR_LOAD_FILE, fss[j]);
 }
 
 async function fileSessionsNavigate(win, next = true) {
   const { fileSessions: fss } = getFileSession();
   const len = fss.length;
   let uri = '';
+  let j = 0;
   let content = '';
   for (let i = 0; i < len; i += 1) {
     const v = fss[i];
@@ -71,18 +69,20 @@ async function fileSessionsNavigate(win, next = true) {
       if (next) {
         if (i !== len - 1) {
           v.open = false;
-          fss[i + 1].open = true;
-          uri = fss[i + 1].uri;
-          content = fss[i + 1].content;
+          j = i + 1;
+          fss[j].open = true;
+          uri = fss[j].uri;
+          content = fss[j].content;
         }
         break;
       }
       // goto previous file
       if (i !== 0) {
         v.open = false;
-        fss[i - 1].open = true;
-        uri = fss[i - 1].uri;
-        content = fss[i - 1].content;
+        j = i - 1;
+        fss[j].open = true;
+        uri = fss[j].uri;
+        content = fss[j].content;
       }
       break;
     }
@@ -94,7 +94,7 @@ async function fileSessionsNavigate(win, next = true) {
     } catch (e) {
       return Promise.reject(e);
     }
-    win.webContents.send(EDITOR_LOAD_FILE, { content, uri });
+    win.webContents.send(EDITOR_LOAD_FILE, fss[j]);
     win.webContents.send(SET_FILE_SESSIONS, { fileSessions: fss });
   }
   return Promise.resolve();
@@ -114,12 +114,11 @@ export async function openFiles(
   win,
   payload = { uri: '', name: '', content: '' }
 ) {
-  const { content, uri } = payload;
   // update local storage
   const { fileSessions } = await upsertFileSessions(payload);
   // update renderer
   win.webContents.send(SET_FILE_SESSIONS, { fileSessions });
-  win.webContents.send(EDITOR_LOAD_FILE, { content, uri });
+  win.webContents.send(EDITOR_LOAD_FILE, payload);
 }
 
 export function openDirs(win, payload) {

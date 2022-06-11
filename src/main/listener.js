@@ -5,6 +5,7 @@ import {
   EDITOR_LOAD_FILE,
   INIT,
   MAIN_SAVE_FILE,
+  PATCH_FILE_SESSIONS,
   SET_FILE_SESSIONS,
 } from './actions';
 import {
@@ -12,22 +13,29 @@ import {
   getFileSession,
   getSettings,
   setFileSessions,
+  patchFileSessions,
 } from './dal';
 
 function listener(win) {
   main.on(EDITOR_LOAD_FILE, async (event, { uri }) => {
-    const { fileSessions } = getFileSession();
-    for (let i = 0; i < fileSessions.length; i += 1) {
-      const v = fileSessions[i];
+    const { fileSessions: fss } = getFileSession();
+    for (let i = 0; i < fss.length; i += 1) {
+      const v = fss[i];
       v.open = false;
       if (v.uri === uri) {
         v.open = true;
-        event.reply(EDITOR_LOAD_FILE, { uri, content: v.content });
+        event.reply(EDITOR_LOAD_FILE, v);
       }
     }
-    await setFileSessions({ fileSessions });
-    event.reply(SET_FILE_SESSIONS, { fileSessions });
+    await setFileSessions({ fileSessions: fss });
+    event.reply(SET_FILE_SESSIONS, { fileSessions: fss });
   });
+
+  main.on(PATCH_FILE_SESSIONS, async (event, payload) => {
+    const { fileSessions } = await patchFileSessions(payload);
+    win.webContents.send(SET_FILE_SESSIONS, { fileSessions });
+  });
+
   main.on('UPDATE_FILE_EXPLORER_WIDTH', async (event, { width }) => {
     await debouncedPatchSettings({ fileExplorerWidth: width });
   });
@@ -53,7 +61,7 @@ function listener(win) {
         changed = true;
       }
       if (v.open) {
-        event.reply(EDITOR_LOAD_FILE, { content, uri });
+        event.reply(EDITOR_LOAD_FILE, v);
       }
     });
     if (changed) {

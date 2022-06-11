@@ -11,6 +11,8 @@ export const initState = {
   setFileExplorerWidth() {},
   fileSessions: [],
   setFileSessions() {},
+  openFileUri: '',
+  setOpenFileUri() {},
 };
 
 const StoreContext = createContext(initState);
