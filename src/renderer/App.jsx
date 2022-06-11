@@ -28,6 +28,7 @@ const TitleWrapper = styled('div')`
   width: 100%;
   position: absolute;
   text-align: center;
+  app-region: drag;
 `;
 
 const Main = () => {
