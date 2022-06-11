@@ -10,7 +10,7 @@ import {
 } from './actions';
 import {
   debouncedPatchSettings,
-  getFileSession,
+  getFileSessions,
   getSettings,
   setFileSessions,
   patchFileSessions,
@@ -18,7 +18,7 @@ import {
 
 function listener(win) {
   main.on(EDITOR_LOAD_FILE, async (event, { uri }) => {
-    const { fileSessions: fss } = getFileSession();
+    const { fileSessions: fss } = getFileSessions();
     for (let i = 0; i < fss.length; i += 1) {
       const v = fss[i];
       v.open = false;
@@ -41,14 +41,14 @@ function listener(win) {
   });
 
   main.on(MAIN_SAVE_FILE, async (event, { content, name }) => {
-    const { fileSessions, openFileSession } = getFileSession();
+    const { fileSessions, openFileSession } = getFileSessions();
     fileSessions[openFileSession].content = content;
     await setFileSessions(fileSessions);
   });
 
   // when the window initiates
   main.on(INIT, async (event) => {
-    const { fileSessions } = getFileSession();
+    const { fileSessions } = getFileSessions();
     const { fileExplorerWidth } = getSettings();
     // check whether any file is changed
     let changed = false;

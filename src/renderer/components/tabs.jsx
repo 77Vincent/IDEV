@@ -14,7 +14,8 @@ const StyledWrapper = styled(Wrapper)`
 `;
 
 export default () => {
-  const { fileSessions } = useContext(StoreContext);
+  const { fileSessions, openFileUri, setOpenFileUri } =
+    useContext(StoreContext);
 
   const Tab = (props) => {
     const { name, uri } = props;
@@ -28,7 +29,10 @@ export default () => {
         paddingLeft={1}
         paddingRight={1}
         onClick={() => {
-          window.electron.ipcRenderer.send(EDITOR_LOAD_FILE, { uri });
+          if (openFileUri !== uri) {
+            // load reload when opening new file
+            setOpenFileUri(uri);
+            window.electron.ipcRenderer.send(EDITOR_LOAD_FILE, { uri }); }
         }}
         {...props}
       >

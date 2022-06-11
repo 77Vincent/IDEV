@@ -63,13 +63,16 @@ export default class Editor extends React.Component {
     window.electron.ipcRenderer.on(
       EDITOR_LOAD_FILE,
       (payload = defaultFileSessionPayload) => {
+        const { openFileUri } = this.context;
         const { content, uri, cursorPos } = payload;
         const { setOpenFileUri } = this.context;
         editor.setValue(content);
         if (cursorPos) {
           editor.setCursor(cursorPos);
         }
-        setOpenFileUri(uri);
+        if (openFileUri !== uri) {
+          setOpenFileUri(uri);
+        }
       }
     );
 
@@ -88,6 +91,7 @@ export default class Editor extends React.Component {
       openFileUri,
       cursorPos: { line, ch },
     } = this.context;
+
     return (
       <StoreContext.Consumer>
         {({ fileExplorerWidth }) => (

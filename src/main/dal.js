@@ -17,13 +17,11 @@ const defaultFileSession = {
 
 const storageSet = promisify(storage.set);
 
-export function getFileSession() {
-  // storage.clear();
+export function getFileSessions() {
   const res = storage.getSync(FILE_SESSIONS);
   if (!res.fileSessions) {
     res.fileSessions = [];
   }
-  // return { fileSessions: [] };
   return res;
 }
 
@@ -46,7 +44,7 @@ export const debouncedPatchSettings = debounce(
 
 export async function patchFileSessions(payload = defaultFileSession) {
   const { uri } = payload;
-  const { fileSessions: fss } = getFileSession();
+  const { fileSessions: fss } = getFileSessions();
   for (let i = 0; i < fss.length; i += 1) {
     if (fss[i].uri === uri) {
       fss[i] = Object.assign(fss[i], payload);
@@ -59,9 +57,9 @@ export async function patchFileSessions(payload = defaultFileSession) {
 }
 
 // insert file session if not exists
-export async function upsertFileSessions(payload = defaultFileSession) {
+export async function openFileSession(payload = defaultFileSession) {
   const { uri } = payload;
-  const { fileSessions } = getFileSession();
+  const { fileSessions } = getFileSessions();
   // edge case, return if uri is zero value
   if (uri === '') {
     return { fileSessions };
@@ -86,3 +84,8 @@ export async function upsertFileSessions(payload = defaultFileSession) {
 export async function setFileSessions(payload = { fileSessions: [] }) {
   return storageSet(FILE_SESSIONS, payload);
 }
+
+export const debouncedSetFileSessions = debounce(
+  async (payload) => setFileSessions(payload),
+  1000
+);
