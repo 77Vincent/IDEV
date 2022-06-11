@@ -1,29 +1,13 @@
+import { getFileSessions, openFileSession, setFileSessions } from './dal';
 import {
-  getFileSessions,
-  openFileSession,
-  setFileSessions,
-  debouncedSetFileSessions,
-} from './dal';
+  EDITOR_LOAD_FILE,
+  ENTER_FULL_SCREEN,
+  LEAVE_FULL_SCREEN,
+  EDITOR_FOCUS,
+  SET_FILE_SESSIONS,
+  GET_FILE_CONTENT,
+} from '../renderer/actions';
 import { debounce } from './util';
-
-// renderer
-export const INIT = 'INIT';
-export const PATCH_FILE_SESSIONS = 'PATCH_FILE_SESSIONS';
-export const SET_FILE_SESSIONS = 'SET_FILE_SESSIONS';
-export const ENTER_FULL_SCREEN = 'ENTER_FULL_SCREEN';
-export const LEAVE_FULL_SCREEN = 'LEAVE_FULL_SCREEN';
-export const GET_FILE_CONTENT = 'GET_FILE_CONTENT';
-export const EDITOR_LOAD_FILE = 'EDITOR_LOAD_FILE';
-export const EDITOR_FOCUS = 'EDITOR_FOCUS';
-
-// main
-export const MAIN_SAVE_FILE = 'MAIN_SAVE_FILE';
-export const OPEN_DIRS = 'OPEN_DIRS';
-export const NOTIFY = 'NOTIFY';
-
-export function notify(win, payload = { code: 0, message: '' }) {
-  win.webContents.send(NOTIFY, payload);
-}
 
 export function getFileContent(win) {
   win.webContents.send(GET_FILE_CONTENT);
@@ -121,8 +105,4 @@ export async function openFiles(
   // update renderer
   win.webContents.send(SET_FILE_SESSIONS, { fileSessions });
   win.webContents.send(EDITOR_LOAD_FILE, payload);
-}
-
-export function openDirs(win, payload) {
-  win.webContents.send(OPEN_DIRS, payload);
 }

@@ -66,6 +66,7 @@ export default class Editor extends React.Component {
         const { openFileUri } = this.context;
         const { content, uri, cursorPos } = payload;
         const { setOpenFileUri } = this.context;
+        editor.focus();
         editor.setValue(content);
         if (cursorPos) {
           editor.setCursor(cursorPos);

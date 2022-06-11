@@ -2,12 +2,11 @@ import { ipcMain as main } from 'electron';
 import { readFileSync } from 'fs';
 
 import {
-  EDITOR_LOAD_FILE,
   INIT,
-  MAIN_SAVE_FILE,
+  EDITOR_LOAD_FILE,
   PATCH_FILE_SESSIONS,
   SET_FILE_SESSIONS,
-} from './actions';
+} from '../renderer/actions';
 import {
   debouncedPatchSettings,
   getFileSessions,
@@ -40,11 +39,11 @@ function listener(win) {
     await debouncedPatchSettings({ fileExplorerWidth: width });
   });
 
-  main.on(MAIN_SAVE_FILE, async (event, { content, name }) => {
-    const { fileSessions, openFileSession } = getFileSessions();
-    fileSessions[openFileSession].content = content;
-    await setFileSessions(fileSessions);
-  });
+  // main.on(MAIN_SAVE_FILE, async (event, { content, name }) => {
+  //   const { fileSessions, openFileSession } = getFileSessions();
+  //   fileSessions[openFileSession].content = content;
+  //   await setFileSessions(fileSessions);
+  // });
 
   // when the window initiates
   main.on(INIT, async (event) => {
