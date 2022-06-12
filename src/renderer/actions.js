@@ -20,10 +20,8 @@ export const defaultFileSessionPayload = {
   uri: '',
   name: '',
   content: '',
-  cursorPos: {
-    line: 1,
-    ch: 1,
-  },
+  cursorLine: 1,
+  cursorCh: 1,
 };
 
 function updateFileSessionsAction(payload = defaultFileSessionPayload) {

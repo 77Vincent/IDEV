@@ -17,17 +17,18 @@ import {
 
 function listener(win) {
   main.on(EDITOR_REFRESH, async (event, { uri }) => {
-    const { fileSessions: fss } = getFileSessions();
-    for (let i = 0; i < fss.length; i += 1) {
-      const v = fss[i];
-      v.open = false;
-      if (v.uri === uri) {
-        v.open = true;
-        event.reply(EDITOR_REFRESH, v);
-      }
-    }
-    await setFileSessions({ fileSessions: fss });
-    event.reply(SET_FILE_SESSIONS, { fileSessions: fss });
+    // const { fileSessions: fss } = getFileSessions();
+    // for (let i = 0; i < fss.length; i += 1) {
+    //   const v = fss[i];
+    //   v.open = false;
+    //   if (v.uri === uri) {
+    //     v.open = true;
+    //     event.reply(EDITOR_REFRESH, v);
+    //   }
+    // }
+    // await setFileSessions({ fileSessions: fss });
+    // event.reply(SET_FILE_SESSIONS, { fileSessions: fss });
+    event.reply(EDITOR_REFRESH);
   });
 
   main.on(PATCH_FILE_SESSIONS, async (event, payload) => {
@@ -39,18 +40,14 @@ function listener(win) {
     await debouncedPatchSettings({ fileExplorerWidth: width });
   });
 
-  // main.on(MAIN_SAVE_FILE, async (event, { content, name }) => {
-  //   const { fileSessions, openFileSession } = getFileSessions();
-  //   fileSessions[openFileSession].content = content;
-  //   await setFileSessions(fileSessions);
-  // });
-
   // when the window initiates
   main.on(INIT, async (event) => {
     const { fileSessions } = getFileSessions();
     const { fileExplorerWidth } = getSettings();
     let openFileUri = '';
     let openFileContent = '';
+    let cursorLine = 1;
+    let cursorCh = 1;
     // check whether any file is changed
     let changed = false;
     fileSessions.forEach((v) => {
@@ -64,7 +61,8 @@ function listener(win) {
       if (v.open) {
         openFileUri = v.uri;
         openFileContent = v.content;
-        event.reply(EDITOR_REFRESH, v);
+        cursorLine = v.cursorLine;
+        cursorCh = v.cursorCh;
       }
     });
     if (changed) {
@@ -72,12 +70,16 @@ function listener(win) {
     }
     const isFullScreen = win.isFullScreen();
     event.reply(INIT, {
+      fileSessions,
       openFileUri,
       openFileContent,
+      cursorLine,
+      cursorCh,
+      // settings
       isFullScreen,
-      fileSessions,
       fileExplorerWidth,
     });
+    event.reply(EDITOR_REFRESH);
   });
 
   main.on('TOGGLE_MAXIMIZE', () => {

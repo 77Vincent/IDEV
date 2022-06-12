@@ -14,11 +14,7 @@ import '../theme/editor-dark.css';
 import FileInfo from './fileInfo';
 import Tabs from './tabs';
 import StoreContext from '../context';
-import {
-  defaultFileSessionPayload,
-  EDITOR_FOCUS,
-  EDITOR_REFRESH,
-} from '../actions';
+import { EDITOR_FOCUS, EDITOR_REFRESH } from '../actions';
 
 const TextareaWrapper = styled('div')`
   position: absolute;
@@ -54,26 +50,18 @@ export default class Editor extends React.Component {
     });
     editor.setSize('100%', '100%');
     editor.on('cursorActivity', (cm) => {
-      const { setCursorPos } = this.context;
+      const { setCursorLine, setCursorCh } = this.context;
       const { line, ch } = cm.getCursor();
-      setCursorPos({ line, ch });
+      setCursorLine(line);
+      setCursorCh(ch);
     });
 
-    window.electron.ipcRenderer.on(
-      EDITOR_REFRESH,
-      (payload = defaultFileSessionPayload) => {
-        const { openFileUri, setOpenFileUri } = this.context;
-        const { content, uri, cursorPos } = payload;
-        editor.focus();
-        editor.setValue(content);
-        if (cursorPos) {
-          editor.setCursor(cursorPos);
-        }
-        if (openFileUri !== uri) {
-          setOpenFileUri(uri);
-        }
-      }
-    );
+    window.electron.ipcRenderer.on(EDITOR_REFRESH, () => {
+      const { openFileContent, cursorLine, cursorCh } = this.context;
+      editor.focus();
+      editor.setValue(openFileContent);
+      editor.setCursor({ line: cursorLine || 1, ch: cursorCh || 1 });
+    });
 
     window.electron.ipcRenderer.on(EDITOR_FOCUS, () => {
       editor.focus();
@@ -81,10 +69,7 @@ export default class Editor extends React.Component {
   }
 
   render() {
-    const {
-      openFileUri,
-      cursorPos: { line, ch },
-    } = this.context;
+    const { openFileUri, cursorLine, cursorCh } = this.context;
 
     return (
       <StoreContext.Consumer>
@@ -102,7 +87,10 @@ export default class Editor extends React.Component {
                 }}
               />
             </TextareaWrapper>
-            <FileInfo uri={openFileUri} pos={{ line, ch }} />
+            <FileInfo
+              uri={openFileUri}
+              pos={{ line: cursorLine, ch: cursorCh }}
+            />
           </Box>
         )}
       </StoreContext.Consumer>

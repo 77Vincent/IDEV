@@ -1,11 +1,10 @@
 import { createContext } from 'react';
 
 export const initState = {
-  cursorPos: {
-    line: 1,
-    ch: 1,
-  },
-  setCursorPos() {},
+  cursorLine: 1,
+  cursorCh: 1,
+  setCursorLine() {},
+  setCursorCh() {},
   isFullScreen: false,
   fileExplorerWidth: 100,
   setFileExplorerWidth() {},
@@ -17,6 +16,6 @@ export const initState = {
   setOpenFileContent() {},
 };
 
-const StoreContext = createContext();
+const StoreContext = createContext(initState);
 
 export default StoreContext;

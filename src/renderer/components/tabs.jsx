@@ -4,7 +4,6 @@ import PT from 'prop-types';
 
 import { Wrapper } from './common';
 import StoreContext from '../context';
-import { EDITOR_REFRESH } from '../actions';
 
 const StyledWrapper = styled(Wrapper)`
   top: 0;
@@ -14,8 +13,16 @@ const StyledWrapper = styled(Wrapper)`
 `;
 
 export default () => {
-  const { fileSessions, openFileUri, setOpenFileUri } =
-    useContext(StoreContext);
+  const {
+    fileSessions,
+    cursorLine,
+    cursorCh,
+    openFileUri,
+    setOpenFileUri,
+    setCursorLine,
+    setCursorCh,
+    setOpenFileContent,
+  } = useContext(StoreContext);
 
   const Tab = (props) => {
     const { name, uri } = props;
@@ -29,10 +36,24 @@ export default () => {
         paddingLeft={1}
         paddingRight={1}
         onClick={() => {
+          // first record the current cursor position to the opening file
+          for (let i = 0; i < fileSessions.length; i += 1) {
+            const v = fileSessions[i];
+            if (v.uri === openFileUri) {
+              v.cursorLine = cursorLine;
+              v.cursorCh = cursorCh;
+              break;
+            }
+          }
+
+          // then update everything to the new file
           if (openFileUri !== uri) {
             // load reload when opening new file
+            const found = fileSessions.find((v) => v.uri === uri);
             setOpenFileUri(uri);
-            window.electron.ipcRenderer.send(EDITOR_REFRESH, { uri });
+            setCursorLine(found.cursorLine);
+            setCursorCh(found.cursorCh);
+            setOpenFileContent(found.content);
           }
         }}
         {...props}
@@ -64,10 +85,10 @@ export default () => {
   return (
     <StyledWrapper>
       <Box display="flex">
-        {fileSessions.map(({ uri, name, open }) => {
+        {fileSessions.map(({ uri, name }) => {
           return (
             <Box key={uri}>
-              {open ? (
+              {uri === openFileUri ? (
                 <ActiveTab uri={uri} name={name} />
               ) : (
                 <StyledTab uri={uri} name={name} />

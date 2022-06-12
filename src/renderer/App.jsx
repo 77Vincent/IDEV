@@ -11,13 +11,13 @@ import StoreContext, { initState } from './context';
 import './App.css';
 import theme from './theme/theme';
 import {
-  debouncedUpdateFileSessionsAction,
   SET_FILE_SESSIONS,
   ENTER_FULL_SCREEN,
   INIT,
   LEAVE_FULL_SCREEN,
   TOGGLE_MAXIMIZE,
   UPDATE_FILE_EXPLORER_WIDTH,
+  EDITOR_REFRESH,
 } from './actions';
 
 const TITLE_SPACE = 24;
@@ -46,32 +46,38 @@ const Main = () => {
   const [openFileContent, setOpenFileContent] = useState('');
   const [fileSessions, setFileSessions] = useState([]);
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [cursorPos, setCursorPos] = useState({
-    line: 1,
-    ch: 1,
-  });
+  const [cursorLine, setCursorLine] = useState(1);
+  const [cursorCh, setCursorCh] = useState(1);
   const contextValue = {
+    // settings
     fileExplorerWidth,
     setFileExplorerWidth,
+    isFullScreen,
+    // file sessions
     fileSessions,
     setFileSessions,
-    isFullScreen,
+    // open file
     openFileUri,
     setOpenFileUri,
     openFileContent,
     setOpenFileContent,
-    cursorPos,
-    setCursorPos,
+    // cursor
+    cursorLine,
+    setCursorLine,
+    cursorCh,
+    setCursorCh,
   };
   useEffect(() => {
     // init
     window.electron.ipcRenderer.send(INIT, {});
     window.electron.ipcRenderer.on(INIT, (payload = initState) => {
+      setFileSessions(payload.fileSessions);
       setOpenFileUri(payload.openFileUri);
       setOpenFileContent(payload.openFileContent);
+      setCursorLine(payload.cursorLine);
+      setCursorCh(payload.cursorCh);
       setIsFullScreen(payload.isFullScreen);
       setFileExplorerWidth(payload.fileExplorerWidth);
-      setFileSessions(payload.fileSessions);
     });
 
     window.electron.ipcRenderer.on(ENTER_FULL_SCREEN, () => {
@@ -98,12 +104,13 @@ const Main = () => {
   // monitor any change in open file session
   useEffect(() => {
     if (openFileUri !== '') {
-      debouncedUpdateFileSessionsAction({
-        uri: openFileUri,
-        cursorPos,
-      });
+      window.electron.ipcRenderer.send(EDITOR_REFRESH, {});
+      // debouncedUpdateFileSessionsAction({
+      //   uri: openFileUri,
+      //   cursorPos,
+      // });
     }
-  }, [cursorPos, openFileUri]);
+  }, [openFileUri]);
 
   const Title = () => {
     return (
