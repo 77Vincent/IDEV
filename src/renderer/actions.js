@@ -2,6 +2,8 @@ import { debounce } from './util';
 
 export const INIT = 'INIT';
 
+export const CLOSE_FILE_SESSION = 'CLOSE_FILE_SESSION';
+
 export const PATCH_FILE_SESSIONS = 'PATCH_FILE_SESSIONS';
 export const SET_FILE_SESSIONS = 'SET_FILE_SESSIONS';
 

@@ -16,8 +16,6 @@ import {
   debouncedNextFile,
   debouncedPreviousFile,
   getFileContent,
-  notify,
-  openDirs,
   openFiles,
 } from './actions';
 
@@ -113,12 +111,6 @@ export default class MenuBuilder {
             const uri = filePaths[0];
             try {
               if (isDir(uri)) {
-                const children = readdirSync(uri);
-                const payload = children.map((v) => ({
-                  name: v,
-                  pwd: uri,
-                }));
-                openDirs(win, payload);
               } else {
                 const content = readFileSync(uri, 'utf-8');
                 await openFiles(win, {
@@ -128,10 +120,7 @@ export default class MenuBuilder {
                 });
               }
             } catch (e) {
-              notify(win, {
-                code: 1,
-                message: 'demo',
-              });
+              console.log(e);
             }
           },
           selector: '',

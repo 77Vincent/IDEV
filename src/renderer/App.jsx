@@ -18,6 +18,7 @@ import {
   TOGGLE_MAXIMIZE,
   UPDATE_FILE_EXPLORER_WIDTH,
   EDITOR_REFRESH,
+  CLOSE_FILE_SESSION,
 } from './actions';
 
 const TITLE_SPACE = 24;
@@ -58,14 +59,14 @@ const Main = () => {
     setFileSessions,
     // open file
     openFileUri,
-    setOpenFileUri,
+    setOpenFileUri: (arg) => setOpenFileUri(arg || ''),
     openFileContent,
-    setOpenFileContent,
+    setOpenFileContent: (arg) => setOpenFileContent(arg || ''),
     // cursor
     cursorLine,
-    setCursorLine,
+    setCursorLine: (arg) => setCursorLine(arg || 1),
     cursorCh,
-    setCursorCh,
+    setCursorCh: (arg) => setCursorCh(arg || 1),
   };
   useEffect(() => {
     // init
@@ -86,11 +87,51 @@ const Main = () => {
     window.electron.ipcRenderer.on(LEAVE_FULL_SCREEN, () => {
       setIsFullScreen(false);
     });
+    window.electron.ipcRenderer.on(CLOSE_FILE_SESSION, () => {
+      let uri = '';
+      let content = '';
+      let line = 1;
+      let ch = 1;
+      const len = fileSessions.length;
+      let j = 0;
+      for (let i = 0; i < len; i += 1) {
+        const v = fileSessions[i];
+        if (v.uri === openFileUri) {
+          fileSessions.splice(i, 1);
+          j = i;
+          break;
+        }
+      }
+      // load the sibling file only when there were more than 1 file before
+      if (len > 1) {
+        j = j === len - 1 ? j - 1 : j;
+        const open = fileSessions[j];
+        console.log(1111111111, open)
+        uri = open.uri;
+        content = open.content;
+        line = open.cursorLine;
+        ch = open.cursorCh;
+      }
+
+      setCursorLine(line);
+      setCursorCh(ch);
+      setOpenFileUri(uri);
+      setOpenFileContent(content);
+      setFileSessions(fileSessions);
+    });
 
     window.electron.ipcRenderer.on(
       SET_FILE_SESSIONS,
-      ({ fileSessions: fileSessionsInput }) => {
-        setFileSessions([...fileSessionsInput]);
+      ({ fileSessions: fss }) => {
+        setFileSessions([...fss]);
+        const found = fss.find((v) => v.open) || {};
+        if (found) {
+          const { uri, content, cursorLine: line, cursorCh: ch } = found;
+          setOpenFileUri(uri);
+          setOpenFileContent(content);
+          setCursorLine(line);
+          setCursorCh(ch);
+        }
       }
     );
   }, []);
