@@ -43,6 +43,7 @@ const TitleWrapper = styled('div')`
 const Main = () => {
   const [fileExplorerWidth, setFileExplorerWidth] = useState(0);
   const [openFileUri, setOpenFileUri] = useState('');
+  const [openFileContent, setOpenFileContent] = useState('');
   const [fileSessions, setFileSessions] = useState([]);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [cursorPos, setCursorPos] = useState({
@@ -57,6 +58,8 @@ const Main = () => {
     isFullScreen,
     openFileUri,
     setOpenFileUri,
+    openFileContent,
+    setOpenFileContent,
     cursorPos,
     setCursorPos,
   };
@@ -64,6 +67,8 @@ const Main = () => {
     // init
     window.electron.ipcRenderer.send(INIT, {});
     window.electron.ipcRenderer.on(INIT, (payload = initState) => {
+      setOpenFileUri(payload.openFileUri);
+      setOpenFileContent(payload.openFileContent);
       setIsFullScreen(payload.isFullScreen);
       setFileExplorerWidth(payload.fileExplorerWidth);
       setFileSessions(payload.fileSessions);
@@ -90,7 +95,7 @@ const Main = () => {
     });
   }, [fileExplorerWidth]);
 
-  // update cursor position
+  // monitor any change in open file session
   useEffect(() => {
     if (openFileUri !== '') {
       debouncedUpdateFileSessionsAction({

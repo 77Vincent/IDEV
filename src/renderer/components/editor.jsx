@@ -17,8 +17,7 @@ import StoreContext from '../context';
 import {
   defaultFileSessionPayload,
   EDITOR_FOCUS,
-  EDITOR_LOAD_FILE,
-  GET_FILE_CONTENT,
+  EDITOR_REFRESH,
 } from '../actions';
 
 const TextareaWrapper = styled('div')`
@@ -61,11 +60,10 @@ export default class Editor extends React.Component {
     });
 
     window.electron.ipcRenderer.on(
-      EDITOR_LOAD_FILE,
+      EDITOR_REFRESH,
       (payload = defaultFileSessionPayload) => {
-        const { openFileUri } = this.context;
+        const { openFileUri, setOpenFileUri } = this.context;
         const { content, uri, cursorPos } = payload;
-        const { setOpenFileUri } = this.context;
         editor.focus();
         editor.setValue(content);
         if (cursorPos) {
@@ -79,11 +77,6 @@ export default class Editor extends React.Component {
 
     window.electron.ipcRenderer.on(EDITOR_FOCUS, () => {
       editor.focus();
-    });
-
-    window.electron.ipcRenderer.on(GET_FILE_CONTENT, () => {
-      const content = editor.getValue();
-      window.electron.ipcRenderer.send('MAIN_SAVE_FILE', { content });
     });
   }
 

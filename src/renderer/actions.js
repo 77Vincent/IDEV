@@ -5,7 +5,7 @@ export const INIT = 'INIT';
 export const PATCH_FILE_SESSIONS = 'PATCH_FILE_SESSIONS';
 export const SET_FILE_SESSIONS = 'SET_FILE_SESSIONS';
 
-export const EDITOR_LOAD_FILE = 'EDITOR_LOAD_FILE';
+export const EDITOR_REFRESH = 'EDITOR_REFRESH';
 export const EDITOR_FOCUS = 'EDITOR_FOCUS';
 
 export const ENTER_FULL_SCREEN = 'ENTER_FULL_SCREEN';

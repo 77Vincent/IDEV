@@ -13,8 +13,10 @@ export const initState = {
   setFileSessions() {},
   openFileUri: '',
   setOpenFileUri() {},
+  openFileContent: '',
+  setOpenFileContent() {},
 };
 
-const StoreContext = createContext(initState);
+const StoreContext = createContext();
 
 export default StoreContext;

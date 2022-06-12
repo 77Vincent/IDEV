@@ -4,7 +4,7 @@ import PT from 'prop-types';
 
 import { Wrapper } from './common';
 import StoreContext from '../context';
-import { EDITOR_LOAD_FILE } from '../actions';
+import { EDITOR_REFRESH } from '../actions';
 
 const StyledWrapper = styled(Wrapper)`
   top: 0;
@@ -32,7 +32,8 @@ export default () => {
           if (openFileUri !== uri) {
             // load reload when opening new file
             setOpenFileUri(uri);
-            window.electron.ipcRenderer.send(EDITOR_LOAD_FILE, { uri }); }
+            window.electron.ipcRenderer.send(EDITOR_REFRESH, { uri });
+          }
         }}
         {...props}
       >

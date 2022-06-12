@@ -1,6 +1,6 @@
 import { getFileSessions, openFileSession, setFileSessions } from './dal';
 import {
-  EDITOR_LOAD_FILE,
+  EDITOR_REFRESH,
   ENTER_FULL_SCREEN,
   LEAVE_FULL_SCREEN,
   EDITOR_FOCUS,
@@ -42,7 +42,7 @@ export async function closeOpenFileSession(win) {
   await setFileSessions({ fileSessions: fss });
   // update renderer
   win.webContents.send(SET_FILE_SESSIONS, { fileSessions: fss });
-  win.webContents.send(EDITOR_LOAD_FILE, fss[j]);
+  win.webContents.send(EDITOR_REFRESH, fss[j]);
 }
 
 async function fileSessionsNavigate(win, next = true) {
@@ -74,7 +74,7 @@ async function fileSessionsNavigate(win, next = true) {
   //   }
   // }
   // only update when there is new file to be opened
-  // win.webContents.send(EDITOR_LOAD_FILE, fss[j]);
+  // win.webContents.send(EDITOR_REFRESH, fss[j]);
   // win.webContents.send(SET_FILE_SESSIONS, { fileSessions: fss });
   // if (uri) {
   //   try {
@@ -104,5 +104,5 @@ export async function openFiles(
   const { fileSessions } = await openFileSession(payload);
   // update renderer
   win.webContents.send(SET_FILE_SESSIONS, { fileSessions });
-  win.webContents.send(EDITOR_LOAD_FILE, payload);
+  win.webContents.send(EDITOR_REFRESH, payload);
 }

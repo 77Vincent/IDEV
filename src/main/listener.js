@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 
 import {
   INIT,
-  EDITOR_LOAD_FILE,
+  EDITOR_REFRESH,
   PATCH_FILE_SESSIONS,
   SET_FILE_SESSIONS,
 } from '../renderer/actions';
@@ -16,14 +16,14 @@ import {
 } from './dal';
 
 function listener(win) {
-  main.on(EDITOR_LOAD_FILE, async (event, { uri }) => {
+  main.on(EDITOR_REFRESH, async (event, { uri }) => {
     const { fileSessions: fss } = getFileSessions();
     for (let i = 0; i < fss.length; i += 1) {
       const v = fss[i];
       v.open = false;
       if (v.uri === uri) {
         v.open = true;
-        event.reply(EDITOR_LOAD_FILE, v);
+        event.reply(EDITOR_REFRESH, v);
       }
     }
     await setFileSessions({ fileSessions: fss });
@@ -49,6 +49,8 @@ function listener(win) {
   main.on(INIT, async (event) => {
     const { fileSessions } = getFileSessions();
     const { fileExplorerWidth } = getSettings();
+    let openFileUri = '';
+    let openFileContent = '';
     // check whether any file is changed
     let changed = false;
     fileSessions.forEach((v) => {
@@ -60,14 +62,22 @@ function listener(win) {
         changed = true;
       }
       if (v.open) {
-        event.reply(EDITOR_LOAD_FILE, v);
+        openFileUri = v.uri;
+        openFileContent = v.content;
+        event.reply(EDITOR_REFRESH, v);
       }
     });
     if (changed) {
       await setFileSessions({ fileSessions });
     }
     const isFullScreen = win.isFullScreen();
-    event.reply(INIT, { isFullScreen, fileSessions, fileExplorerWidth });
+    event.reply(INIT, {
+      openFileUri,
+      openFileContent,
+      isFullScreen,
+      fileSessions,
+      fileExplorerWidth,
+    });
   });
 
   main.on('TOGGLE_MAXIMIZE', () => {
