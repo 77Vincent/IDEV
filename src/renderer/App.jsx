@@ -49,14 +49,15 @@ const Main = () => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [cursorLine, setCursorLine] = useState(1);
   const [cursorCh, setCursorCh] = useState(1);
+
   const contextValue = {
     // settings
     fileExplorerWidth,
-    setFileExplorerWidth,
+    setFileExplorerWidth: (arg) => setFileExplorerWidth(arg || 200),
     isFullScreen,
     // file sessions
     fileSessions,
-    setFileSessions,
+    setFileSessions: (arg) => setFileSessions(arg || []),
     // open file
     openFileUri,
     setOpenFileUri: (arg) => setOpenFileUri(arg || ''),
@@ -87,51 +88,16 @@ const Main = () => {
     window.electron.ipcRenderer.on(LEAVE_FULL_SCREEN, () => {
       setIsFullScreen(false);
     });
-    window.electron.ipcRenderer.on(CLOSE_FILE_SESSION, () => {
-      let uri = '';
-      let content = '';
-      let line = 1;
-      let ch = 1;
-      const len = fileSessions.length;
-      let j = 0;
-      for (let i = 0; i < len; i += 1) {
-        const v = fileSessions[i];
-        if (v.uri === openFileUri) {
-          fileSessions.splice(i, 1);
-          j = i;
-          break;
-        }
-      }
-      // load the sibling file only when there were more than 1 file before
-      if (len > 1) {
-        j = j === len - 1 ? j - 1 : j;
-        const open = fileSessions[j];
-        console.log(1111111111, open)
-        uri = open.uri;
-        content = open.content;
-        line = open.cursorLine;
-        ch = open.cursorCh;
-      }
-
-      setCursorLine(line);
-      setCursorCh(ch);
-      setOpenFileUri(uri);
-      setOpenFileContent(content);
-      setFileSessions(fileSessions);
-    });
 
     window.electron.ipcRenderer.on(
       SET_FILE_SESSIONS,
       ({ fileSessions: fss }) => {
-        setFileSessions([...fss]);
+        setFileSessions(fss);
         const found = fss.find((v) => v.open) || {};
-        if (found) {
-          const { uri, content, cursorLine: line, cursorCh: ch } = found;
-          setOpenFileUri(uri);
-          setOpenFileContent(content);
-          setCursorLine(line);
-          setCursorCh(ch);
-        }
+        setOpenFileUri(found.uri);
+        setOpenFileContent(found.content);
+        setCursorLine(found.cursorLine);
+        setCursorCh(found.cursorCh);
       }
     );
   }, []);
@@ -142,14 +108,10 @@ const Main = () => {
     });
   }, [fileExplorerWidth]);
 
-  // monitor any change in open file session
+  // when openFileUri changes, refresh the editor
   useEffect(() => {
     if (openFileUri !== '') {
       window.electron.ipcRenderer.send(EDITOR_REFRESH, {});
-      // debouncedUpdateFileSessionsAction({
-      //   uri: openFileUri,
-      //   cursorPos,
-      // });
     }
   }, [openFileUri]);
 

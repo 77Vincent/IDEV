@@ -59,7 +59,7 @@ export default class Editor extends React.Component {
     window.electron.ipcRenderer.on(EDITOR_REFRESH, () => {
       const { openFileContent, cursorLine, cursorCh } = this.context;
       editor.focus();
-      editor.setValue(openFileContent);
+      editor.setValue(openFileContent || '');
       editor.setCursor({ line: cursorLine || 1, ch: cursorCh || 1 });
     });
 

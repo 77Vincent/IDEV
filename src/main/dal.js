@@ -79,8 +79,12 @@ export async function openFileSession(payload = defaultFileSession) {
   return { fileSessions };
 }
 
-export async function setFileSessions(payload = { fileSessions: [] }) {
-  return storageSet(FILE_SESSIONS, payload);
+export function setFileSessions(payload = { fileSessions: [] }) {
+  return storage.set(FILE_SESSIONS, payload, (e) => {
+    if (e) {
+      throw e;
+    }
+  });
 }
 
 export const debouncedSetFileSessions = debounce(

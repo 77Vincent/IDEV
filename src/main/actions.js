@@ -22,29 +22,27 @@ export function leaveFullScreen(win) {
   win.webContents.send(LEAVE_FULL_SCREEN);
 }
 
-export async function closeOpenFileSession(win) {
-  // const { fileSessions: fss } = getFileSessions();
-  // const len = fss.length;
-  // let j = 0;
-  // for (let i = 0; i < len; i += 1) {
-  //   const v = fss[i];
-  //   if (v.open === true) {
-  //     fss.splice(i, 1);
-  //     j = i;
-  //     break;
-  //   }
-  // }
-  // // load the sibling file only when there were more than 1 file before
-  // if (len > 1) {
-  //   j = j === len - 1 ? j - 1 : j;
-  //   fss[j].open = true;
-  // }
-  // // update local storage
-  // await setFileSessions({ fileSessions: fss });
-  // // update renderer
-  // win.webContents.send(SET_FILE_SESSIONS, { fileSessions: fss });
-  // win.webContents.send(EDITOR_REFRESH);
-  win.webContents.send(CLOSE_FILE_SESSION);
+export function closeOpenFileSession(win) {
+  const { fileSessions: fss } = getFileSessions();
+  const len = fss.length;
+  let j = 0;
+  for (let i = 0; i < len; i += 1) {
+    const v = fss[i];
+    if (v.open === true) {
+      fss.splice(i, 1);
+      j = i;
+      break;
+    }
+  }
+  // load the sibling file only when there were more than 1 file before
+  if (len > 1) {
+    j = j === len - 1 ? j - 1 : j;
+    fss[j].open = true;
+  }
+  // update local storage
+  setFileSessions({ fileSessions: fss });
+  // update renderer
+  win.webContents.send(SET_FILE_SESSIONS, { fileSessions: fss });
 }
 
 async function fileSessionsNavigate(win, next = true) {
