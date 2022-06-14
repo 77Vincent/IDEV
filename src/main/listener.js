@@ -6,7 +6,7 @@ import {
   UPDATE_OPEN_FILE_URI,
   UPDATE_SETTINGS,
   TOGGLE_MAXIMIZE,
-  SET_FILE_SESSIONS,
+  PATCH_FILE_SESSIONS,
 } from '../common/consts';
 import {
   updateSettings,
@@ -14,6 +14,7 @@ import {
   setOpenFileUri,
   getOpenFileUri,
   getFileSessionsLatest,
+  patchFileSessions,
 } from './dal';
 
 function listener(win) {
@@ -25,8 +26,8 @@ function listener(win) {
     setOpenFileUri(payload);
   });
 
-  main.on(SET_FILE_SESSIONS, async (event, payload) => {
-    // patchFileSessions(payload);
+  main.on(PATCH_FILE_SESSIONS, async (event, payload) => {
+    patchFileSessions(payload);
   });
 
   main.on(UPDATE_SETTINGS, async (event, payload) => {

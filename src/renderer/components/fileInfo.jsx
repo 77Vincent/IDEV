@@ -1,6 +1,7 @@
 import { Box, styled, Typography } from '@mui/material';
 import PT from 'prop-types';
 import { Wrapper } from './common';
+import { TAB_HEIGHT } from '../../common/consts';
 
 const StyledWrapper = styled(Wrapper)`
   border-top-width: 1px;
@@ -17,7 +18,7 @@ const FileInfo = (props) => {
 
   return (
     <StyledWrapper>
-      <Box display="flex">
+      <Box height={TAB_HEIGHT} display="flex">
         <Typography variant="body2">
           {line}:{ch}
         </Typography>

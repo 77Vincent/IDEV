@@ -4,6 +4,7 @@ import PT from 'prop-types';
 
 import { Wrapper } from './common';
 import StoreContext from '../context';
+import { TAB_HEIGHT } from '../../common/consts';
 
 const StyledWrapper = styled(Wrapper)`
   top: 0;
@@ -29,7 +30,7 @@ export default () => {
     const { name, uri } = props;
     return (
       <Box
-        height={24}
+        height={TAB_HEIGHT}
         minWidth={75}
         display="flex"
         justifyContent="center"

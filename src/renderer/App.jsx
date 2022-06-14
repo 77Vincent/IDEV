@@ -12,7 +12,9 @@ import StoreContext from './context';
 import './App.css';
 import theme from './theme/theme';
 import {
+  patchFileSessionsAction,
   setFileSessionsAction,
+  triggerEditorRefreshAction,
   updateOpenFileUriAction,
   updateSettingsAction,
 } from './actions';
@@ -130,7 +132,7 @@ const Main = () => {
   // when openFileUri changes, refresh the editor
   useEffect(() => {
     if (openFileUri !== '') {
-      window.electron.ipcRenderer.send(EDITOR_REFRESH, {});
+      triggerEditorRefreshAction();
       updateOpenFileUriAction({ openFileUri });
     }
   }, [openFileUri]);
@@ -142,6 +144,14 @@ const Main = () => {
       isFullScreen,
     });
   }, [fileExplorerWidth, isFullScreen]);
+
+  useEffect(() => {
+    patchFileSessionsAction({
+      uri: openFileUri,
+      cursorLine,
+      cursorCh,
+    });
+  }, [cursorCh, cursorLine]);
 
   return (
     <ThemeProvider theme={theme}>
