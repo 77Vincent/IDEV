@@ -43,10 +43,8 @@ function listener(win) {
       win.setFullScreen(true);
     }
     event.reply(INIT, {
-      // file sessions
       fileSessions,
       openFileUri,
-      // settings
       isFullScreen,
       fileExplorerWidth,
     });

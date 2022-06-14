@@ -38,25 +38,12 @@ export default () => {
         paddingLeft={1}
         paddingRight={1}
         onClick={() => {
-          // first record the current cursor position to the opening file
-          for (let i = 0; i < fileSessions.length; i += 1) {
-            const v = fileSessions[i];
-            if (v.uri === openFileUri) {
-              v.cursorLine = cursorLine;
-              v.cursorCh = cursorCh;
-              break;
-            }
-          }
-
-          // then update everything to the new file
+          // only updating when switch to another file
           if (openFileUri !== uri) {
-            // updating states when opening new file
             const found = fileSessions.find((v) => v.uri === uri);
-            setFileSessions(fileSessions);
             setCursorLine(found.cursorLine);
             setCursorCh(found.cursorCh);
             setOpenFileContent(found.content);
-            // has to be the last one to trigger the refresh
             setOpenFileUri(uri);
           }
         }}
