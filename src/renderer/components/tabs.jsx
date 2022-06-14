@@ -22,6 +22,7 @@ export default () => {
     setCursorLine,
     setCursorCh,
     setOpenFileContent,
+    setFileSessions,
   } = useContext(StoreContext);
 
   const Tab = (props) => {
@@ -48,12 +49,14 @@ export default () => {
 
           // then update everything to the new file
           if (openFileUri !== uri) {
-            // load reload when opening new file
+            // updating states when opening new file
             const found = fileSessions.find((v) => v.uri === uri);
-            setOpenFileUri(uri);
+            setFileSessions(fileSessions);
             setCursorLine(found.cursorLine);
             setCursorCh(found.cursorCh);
             setOpenFileContent(found.content);
+            // has to be the last one to trigger the refresh
+            setOpenFileUri(uri);
           }
         }}
         {...props}

@@ -1,4 +1,10 @@
-import { getFileSessions, openFileSession, setFileSessions } from './dal';
+import {
+  getFileSessions,
+  getOpenFileUri,
+  openFileSession,
+  setFileSessions,
+  setOpenFileUri,
+} from './dal';
 import {
   EDITOR_REFRESH,
   ENTER_FULL_SCREEN,
@@ -6,7 +12,6 @@ import {
   EDITOR_FOCUS,
   SET_FILE_SESSIONS,
   GET_FILE_CONTENT,
-  CLOSE_FILE_SESSION,
 } from '../renderer/actions';
 import { debounce } from './util';
 
@@ -24,11 +29,13 @@ export function leaveFullScreen(win) {
 
 export function closeOpenFileSession(win) {
   const { fileSessions: fss } = getFileSessions();
+  const { openFileUri } = getOpenFileUri();
   const len = fss.length;
+  let newOpenFileUri = '';
   let j = 0;
   for (let i = 0; i < len; i += 1) {
     const v = fss[i];
-    if (v.open === true) {
+    if (v.uri === openFileUri) {
       fss.splice(i, 1);
       j = i;
       break;
@@ -37,12 +44,16 @@ export function closeOpenFileSession(win) {
   // load the sibling file only when there were more than 1 file before
   if (len > 1) {
     j = j === len - 1 ? j - 1 : j;
-    fss[j].open = true;
+    newOpenFileUri = fss[j].uri;
   }
   // update local storage
   setFileSessions({ fileSessions: fss });
+  setOpenFileUri({ openFileUri: newOpenFileUri });
   // update renderer
-  win.webContents.send(SET_FILE_SESSIONS, { fileSessions: fss });
+  win.webContents.send(SET_FILE_SESSIONS, {
+    fileSessions: fss,
+    openFileUri: newOpenFileUri,
+  });
 }
 
 async function fileSessionsNavigate(win, next = true) {
@@ -101,8 +112,9 @@ export async function openFiles(
   payload = { uri: '', name: '', content: '' }
 ) {
   // update local storage
+  const { uri: openFileUri } = payload;
   const { fileSessions } = await openFileSession(payload);
   // update renderer
-  win.webContents.send(SET_FILE_SESSIONS, { fileSessions });
+  win.webContents.send(SET_FILE_SESSIONS, { fileSessions, openFileUri });
   win.webContents.send(EDITOR_REFRESH);
 }

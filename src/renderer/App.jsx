@@ -16,9 +16,10 @@ import {
   INIT,
   LEAVE_FULL_SCREEN,
   TOGGLE_MAXIMIZE,
-  UPDATE_FILE_EXPLORER_WIDTH,
   EDITOR_REFRESH,
-  CLOSE_FILE_SESSION,
+  setFileSessionsAction,
+  updateOpenFileUriAction,
+  updateSettingsAction,
 } from './actions';
 
 const TITLE_SPACE = 24;
@@ -65,21 +66,35 @@ const Main = () => {
     setOpenFileContent: (arg) => setOpenFileContent(arg || ''),
     // cursor
     cursorLine,
-    setCursorLine: (arg) => setCursorLine(arg || 1),
+    setCursorLine: (arg) => setCursorLine(arg || 0),
     cursorCh,
-    setCursorCh: (arg) => setCursorCh(arg || 1),
+    setCursorCh: (arg) => setCursorCh(arg || 0),
   };
   useEffect(() => {
     // init
     window.electron.ipcRenderer.send(INIT, {});
     window.electron.ipcRenderer.on(INIT, (payload = initState) => {
-      setFileSessions(payload.fileSessions);
-      setOpenFileUri(payload.openFileUri);
-      setOpenFileContent(payload.openFileContent);
-      setCursorLine(payload.cursorLine);
-      setCursorCh(payload.cursorCh);
-      setIsFullScreen(payload.isFullScreen);
-      setFileExplorerWidth(payload.fileExplorerWidth);
+      const {
+        fileSessions: fss,
+        openFileUri: ofu,
+        isFullScreen: ifs,
+        fileExplorerWidth: few,
+      } = payload;
+      setFileSessions(fss);
+      setOpenFileUri(ofu);
+      setIsFullScreen(ifs);
+      setFileExplorerWidth(few);
+
+      // set dependent values
+      for (let i = 0; i < fss.length; i += 1) {
+        const v = fss[i];
+        if (v.uri === ofu) {
+          setOpenFileContent(v.content);
+          setCursorLine(v.cursorLine);
+          setCursorCh(v.cursorCh);
+          break;
+        }
+      }
     });
 
     window.electron.ipcRenderer.on(ENTER_FULL_SCREEN, () => {
@@ -91,10 +106,10 @@ const Main = () => {
 
     window.electron.ipcRenderer.on(
       SET_FILE_SESSIONS,
-      ({ fileSessions: fss }) => {
+      ({ fileSessions: fss, openFileUri: ofu }) => {
         setFileSessions(fss);
-        const found = fss.find((v) => v.open) || {};
-        setOpenFileUri(found.uri);
+        const found = fss.find((v) => v.uri === ofu) || {};
+        setOpenFileUri(ofu);
         setOpenFileContent(found.content);
         setCursorLine(found.cursorLine);
         setCursorCh(found.cursorCh);
@@ -103,17 +118,23 @@ const Main = () => {
   }, []);
 
   useEffect(() => {
-    window.electron.ipcRenderer.send(UPDATE_FILE_EXPLORER_WIDTH, {
-      width: fileExplorerWidth,
-    });
-  }, [fileExplorerWidth]);
+    setFileSessionsAction(fileSessions);
+  }, [fileSessions, cursorLine, cursorCh]);
 
   // when openFileUri changes, refresh the editor
   useEffect(() => {
     if (openFileUri !== '') {
       window.electron.ipcRenderer.send(EDITOR_REFRESH, {});
+      updateOpenFileUriAction({ openFileUri });
     }
   }, [openFileUri]);
+
+  // persisting settings
+  useEffect(() => {
+    updateSettingsAction({
+      fileExplorerWidth,
+    });
+  }, [fileExplorerWidth]);
 
   const Title = () => {
     return (

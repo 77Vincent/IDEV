@@ -1,9 +1,11 @@
 import { promisify } from 'util';
 import storage from 'electron-json-storage';
 import { debounce } from './util';
+import { readFileSync } from 'fs';
 
 const FILE_SESSIONS = 'fileSessions';
 const SETTINGS = 'settings';
+const OPEN_FILE_URI = 'openFileUri';
 
 const defaultFileSession = {
   uri: '',
@@ -13,34 +15,63 @@ const defaultFileSession = {
   cursorCh: 1,
 };
 
+const defaultFileSessions = {
+  fileSessions: [],
+};
+
+const defaultOpenFileUri = {
+  openFileUri: '',
+};
+
+const defaultSettings = {
+  fileExplorerWidth: 200,
+};
+
 const storageSet = promisify(storage.set);
 
 export function getFileSessions() {
   const res = storage.getSync(FILE_SESSIONS);
-  if (!res.fileSessions) {
-    res.fileSessions = [];
+  return Object.assign(defaultFileSessions, res);
+}
+
+export function freshFileSessions() {
+  const { fileSessions } = getFileSessions();
+  let changed = false;
+  fileSessions.forEach((v) => {
+    const { uri, content } = v;
+    const rawContent = readFileSync(uri, 'utf-8');
+    // not the actual file is newer, update cache
+    if (rawContent !== content) {
+      v.content = rawContent;
+      changed = true;
+    }
+  });
+  if (changed) {
+    setFileSessions(fileSessions);
   }
-  return res;
+  return { fileSessions };
+}
+
+export function getOpenFileUri() {
+  const res = storage.getSync(OPEN_FILE_URI);
+  return Object.assign(defaultOpenFileUri, res);
 }
 
 export function getSettings() {
   const res = storage.getSync(SETTINGS);
-  if (!res.fileExplorerWidth) {
-    res.fileExplorerWidth = 200;
-  }
-  return res;
+  return Object.assign(defaultSettings, res);
 }
 
-export async function patchSettings(payload = {}) {
-  return storageSet(SETTINGS, payload);
+export async function updateSettings(payload = defaultSettings) {
+  return storage.set(SETTINGS, payload, (e) => {
+    if (e) {
+      console.log(e);
+    }
+  });
 }
 
-export const debouncedPatchSettings = debounce(
-  async (payload) => patchSettings(payload),
-  100
-);
-
-export async function patchFileSessions(payload = defaultFileSession) {
+// update an existing file session
+export function patchFileSessions(payload = defaultFileSession) {
   const { uri } = payload;
   const { fileSessions: fss } = getFileSessions();
   for (let i = 0; i < fss.length; i += 1) {
@@ -50,11 +81,16 @@ export async function patchFileSessions(payload = defaultFileSession) {
     }
   }
 
-  await storageSet(FILE_SESSIONS, { fileSessions: fss });
+  storage.set(FILE_SESSIONS, { fileSessions: fss }, (e) => {
+    if (e) {
+      throw e;
+    }
+  });
   return { fileSessions: fss };
 }
 
 // insert file session if not exists
+// and only updating the openFileUri if no new file is opened
 export async function openFileSession(payload = defaultFileSession) {
   const { uri } = payload;
   const { fileSessions } = getFileSessions();
@@ -63,23 +99,34 @@ export async function openFileSession(payload = defaultFileSession) {
     return { fileSessions };
   }
   let found = false;
-  payload.open = true;
   for (let i = 0; i < fileSessions.length; i += 1) {
     const v = fileSessions[i];
-    v.open = false;
     if (v.uri === uri) {
-      fileSessions[i] = payload;
       found = true;
+      break;
     }
   }
   if (!found) {
     fileSessions.push(payload);
+    await storageSet(FILE_SESSIONS, { fileSessions });
   }
-  await storageSet(FILE_SESSIONS, { fileSessions });
+  storage.set(OPEN_FILE_URI, uri, (e) => {
+    if (e) {
+      throw e;
+    }
+  });
   return { fileSessions };
 }
 
-export function setFileSessions(payload = { fileSessions: [] }) {
+export function setOpenFileUri(payload = defaultOpenFileUri) {
+  return storage.set(OPEN_FILE_URI, payload, (e) => {
+    if (e) {
+      throw e;
+    }
+  });
+}
+
+export function setFileSessions(payload = defaultFileSessions) {
   return storage.set(FILE_SESSIONS, payload, (e) => {
     if (e) {
       throw e;
