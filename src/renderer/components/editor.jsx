@@ -9,12 +9,13 @@ import 'codemirror/addon/comment/comment';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/jsx/jsx';
 import 'codemirror/keymap/vim';
+
 import '../theme/codemirror.css';
 import '../theme/editor-dark.css';
 import FileInfo from './fileInfo';
 import Tabs from './tabs';
 import StoreContext from '../context';
-import { EDITOR_FOCUS, EDITOR_REFRESH } from '../actions';
+import { EDITOR_FOCUS, EDITOR_REFRESH } from '../../common/consts';
 
 const TextareaWrapper = styled('div')`
   position: absolute;

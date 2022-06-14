@@ -7,13 +7,13 @@ import {
   UPDATE_SETTINGS,
   TOGGLE_MAXIMIZE,
   SET_FILE_SESSIONS,
-} from '../renderer/actions';
+} from '../common/consts';
 import {
   updateSettings,
   getSettings,
   setOpenFileUri,
   getOpenFileUri,
-  freshFileSessions,
+  getFileSessionsLatest,
 } from './dal';
 
 function listener(win) {
@@ -26,7 +26,6 @@ function listener(win) {
   });
 
   main.on(SET_FILE_SESSIONS, async (event, payload) => {
-    console.log(7777777, payload[0].cursorCh);
     // patchFileSessions(payload);
   });
 
@@ -36,7 +35,7 @@ function listener(win) {
 
   // when the window initiates
   main.on(INIT, async (event) => {
-    const { fileSessions } = freshFileSessions();
+    const { fileSessions } = getFileSessionsLatest();
     const { openFileUri } = getOpenFileUri();
     const { fileExplorerWidth, isFullScreen } = getSettings();
     if (isFullScreen) {

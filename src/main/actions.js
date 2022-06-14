@@ -12,8 +12,8 @@ import {
   EDITOR_FOCUS,
   SET_FILE_SESSIONS,
   GET_FILE_CONTENT,
-} from '../renderer/actions';
-import { debounce } from './util';
+} from '../common/consts';
+import { debounce } from '../common/util';
 
 export function getFileContent(win) {
   win.webContents.send(GET_FILE_CONTENT);

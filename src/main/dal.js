@@ -1,41 +1,23 @@
-import { promisify } from 'util';
 import storage from 'electron-json-storage';
-import { debounce } from './util';
 import { readFileSync } from 'fs';
+
+import {
+  defaultFileSession,
+  defaultFileSessions,
+  defaultOpenFileUri,
+  defaultSettings,
+} from '../common/consts';
 
 const FILE_SESSIONS = 'fileSessions';
 const SETTINGS = 'settings';
 const OPEN_FILE_URI = 'openFileUri';
 
-const defaultFileSession = {
-  uri: '',
-  name: '',
-  content: '',
-  cursorLine: 1,
-  cursorCh: 1,
-};
-
-const defaultFileSessions = {
-  fileSessions: [],
-};
-
-const defaultOpenFileUri = {
-  openFileUri: '',
-};
-
-const defaultSettings = {
-  fileExplorerWidth: 200,
-  isFullScreen: false,
-};
-
-const storageSet = promisify(storage.set);
-
 export function getFileSessions() {
   const res = storage.getSync(FILE_SESSIONS);
-  return Object.assign(defaultFileSessions, res);
+  return { fileSessions: defaultFileSessions, ...res };
 }
 
-export function freshFileSessions() {
+export function getFileSessionsLatest() {
   const { fileSessions } = getFileSessions();
   let changed = false;
   fileSessions.forEach((v) => {
@@ -55,7 +37,7 @@ export function freshFileSessions() {
 
 export function getOpenFileUri() {
   const res = storage.getSync(OPEN_FILE_URI);
-  return Object.assign(defaultOpenFileUri, res);
+  return { openFileUri: defaultOpenFileUri, ...res };
 }
 
 export function getSettings() {
@@ -109,7 +91,11 @@ export async function openFileSession(payload = defaultFileSession) {
   }
   if (!found) {
     fileSessions.push(payload);
-    await storageSet(FILE_SESSIONS, { fileSessions });
+    storage.set(FILE_SESSIONS, { fileSessions }, (e) => {
+      if (e) {
+        throw e;
+      }
+    });
   }
   storage.set(OPEN_FILE_URI, uri, (e) => {
     if (e) {
@@ -119,7 +105,7 @@ export async function openFileSession(payload = defaultFileSession) {
   return { fileSessions };
 }
 
-export function setOpenFileUri(payload = defaultOpenFileUri) {
+export function setOpenFileUri(payload = { openFileUri: defaultOpenFileUri }) {
   return storage.set(OPEN_FILE_URI, payload, (e) => {
     if (e) {
       throw e;
@@ -127,15 +113,12 @@ export function setOpenFileUri(payload = defaultOpenFileUri) {
   });
 }
 
-export function setFileSessions(payload = defaultFileSessions) {
+export function setFileSessions(
+  payload = { fileSessions: defaultFileSessions }
+) {
   return storage.set(FILE_SESSIONS, payload, (e) => {
     if (e) {
       throw e;
     }
   });
 }
-
-export const debouncedSetFileSessions = debounce(
-  async (payload) => setFileSessions(payload),
-  1000
-);

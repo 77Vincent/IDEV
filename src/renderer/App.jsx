@@ -6,10 +6,15 @@ import { useEffect, useState } from 'react';
 import Editor from './components/editor';
 import FileExplorer from './components/explorer';
 import Resizable from './components/resizable';
-import StoreContext, { initState } from './context';
+import StoreContext from './context';
 // import icon from '../../assets/icon.svg';
 import './App.css';
 import theme from './theme/theme';
+import {
+  setFileSessionsAction,
+  updateOpenFileUriAction,
+  updateSettingsAction,
+} from './actions';
 import {
   SET_FILE_SESSIONS,
   ENTER_FULL_SCREEN,
@@ -17,10 +22,14 @@ import {
   LEAVE_FULL_SCREEN,
   TOGGLE_MAXIMIZE,
   EDITOR_REFRESH,
-  setFileSessionsAction,
-  updateOpenFileUriAction,
-  updateSettingsAction,
-} from './actions';
+  defaultFileExplorerWidth,
+  defaultOpenFileUri,
+  defaultFileSessions,
+  defaultIsFullScreen,
+  defaultCursorLine,
+  defaultCursorCh,
+  defaultOpenFileContent,
+} from '../common/consts';
 
 const TITLE_SPACE = 24;
 
@@ -43,37 +52,43 @@ const TitleWrapper = styled('div')`
 `;
 
 const Main = () => {
-  const [fileExplorerWidth, setFileExplorerWidth] = useState(0);
-  const [openFileUri, setOpenFileUri] = useState('');
-  const [openFileContent, setOpenFileContent] = useState('');
-  const [fileSessions, setFileSessions] = useState([]);
-  const [isFullScreen, setIsFullScreen] = useState(false);
-  const [cursorLine, setCursorLine] = useState(1);
-  const [cursorCh, setCursorCh] = useState(1);
+  const [fileExplorerWidth, setFileExplorerWidth] = useState(
+    defaultFileExplorerWidth
+  );
+  const [openFileUri, setOpenFileUri] = useState(defaultOpenFileUri);
+  const [openFileContent, setOpenFileContent] = useState(
+    defaultOpenFileContent
+  );
+  const [fileSessions, setFileSessions] = useState(defaultFileSessions);
+  const [isFullScreen, setIsFullScreen] = useState(defaultIsFullScreen);
+  const [cursorLine, setCursorLine] = useState(defaultCursorLine);
+  const [cursorCh, setCursorCh] = useState(defaultCursorCh);
 
   const contextValue = {
     // settings
     fileExplorerWidth,
-    setFileExplorerWidth: (arg) => setFileExplorerWidth(arg || 200),
+    setFileExplorerWidth: (arg) =>
+      setFileExplorerWidth(arg || defaultFileExplorerWidth),
     isFullScreen,
     // file sessions
     fileSessions,
-    setFileSessions: (arg) => setFileSessions(arg || []),
+    setFileSessions: (arg) => setFileSessions(arg || defaultFileSessions),
     // open file
     openFileUri,
-    setOpenFileUri: (arg) => setOpenFileUri(arg || ''),
+    setOpenFileUri: (arg) => setOpenFileUri(arg || defaultOpenFileUri),
     openFileContent,
-    setOpenFileContent: (arg) => setOpenFileContent(arg || ''),
+    setOpenFileContent: (arg) =>
+      setOpenFileContent(arg || defaultOpenFileContent),
     // cursor
     cursorLine,
-    setCursorLine: (arg) => setCursorLine(arg || 0),
+    setCursorLine: (arg) => setCursorLine(arg || defaultCursorLine),
     cursorCh,
-    setCursorCh: (arg) => setCursorCh(arg || 0),
+    setCursorCh: (arg) => setCursorCh(arg || defaultCursorCh),
   };
   useEffect(() => {
     // init
     window.electron.ipcRenderer.send(INIT, {});
-    window.electron.ipcRenderer.on(INIT, (payload = initState) => {
+    window.electron.ipcRenderer.on(INIT, (payload) => {
       const {
         fileSessions: fss,
         openFileUri: ofu,

@@ -25,13 +25,3 @@ export function isDir(file) {
 export function isDarwin() {
   return process.platform === 'darwin';
 }
-
-export function debounce(func, timeout = 20) {
-  let timer;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      func.apply(this, args);
-    }, timeout);
-  };
-}
