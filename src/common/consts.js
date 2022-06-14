@@ -30,3 +30,6 @@ export const defaultSettings = {
   fileExplorerWidth: 200,
   isFullScreen: false,
 };
+
+// other
+export const TITLE_SPACE = 24;

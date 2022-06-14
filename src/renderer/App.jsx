@@ -1,8 +1,9 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import 'normalize.css';
-import { styled, ThemeProvider, Typography } from '@mui/material';
+import { styled, ThemeProvider } from '@mui/material';
 import { useEffect, useState } from 'react';
 
+import Title from './components/title';
 import Editor from './components/editor';
 import FileExplorer from './components/explorer';
 import Resizable from './components/resizable';
@@ -20,7 +21,6 @@ import {
   ENTER_FULL_SCREEN,
   INIT,
   LEAVE_FULL_SCREEN,
-  TOGGLE_MAXIMIZE,
   EDITOR_REFRESH,
   defaultFileExplorerWidth,
   defaultOpenFileUri,
@@ -29,9 +29,8 @@ import {
   defaultCursorLine,
   defaultCursorCh,
   defaultOpenFileContent,
+  TITLE_SPACE,
 } from '../common/consts';
-
-const TITLE_SPACE = 24;
 
 const Wrapper = styled('div')`
   display: flex;
@@ -41,14 +40,6 @@ const Wrapper = styled('div')`
   right: 0;
   width: 100%;
   user-select: none;
-`;
-
-const TitleWrapper = styled('div')`
-  top: -${TITLE_SPACE}px;
-  width: 100%;
-  position: absolute;
-  text-align: center;
-  app-region: drag;
 `;
 
 const Main = () => {
@@ -151,20 +142,6 @@ const Main = () => {
       isFullScreen,
     });
   }, [fileExplorerWidth, isFullScreen]);
-
-  const Title = () => {
-    return (
-      <TitleWrapper
-        onDoubleClick={() =>
-          window.electron.ipcRenderer.send(TOGGLE_MAXIMIZE, {})
-        }
-      >
-        <Typography fontWeight={700} variant="body2">
-          Vimer
-        </Typography>
-      </TitleWrapper>
-    );
-  };
 
   return (
     <ThemeProvider theme={theme}>
