@@ -38,9 +38,23 @@ export default () => {
         paddingLeft={1}
         paddingRight={1}
         onClick={() => {
+          let found = null;
+          // first record the current cursor position to the opening file
+          // and also store the found file session
+          for (let i = 0; i < fileSessions.length; i += 1) {
+            const v = fileSessions[i];
+            if (v.uri === openFileUri) {
+              v.cursorLine = cursorLine;
+              v.cursorCh = cursorCh;
+            }
+            if (v.uri === uri) {
+              found = v;
+            }
+          }
+
           // only updating when switch to another file
           if (openFileUri !== uri) {
-            const found = fileSessions.find((v) => v.uri === uri);
+            setFileSessions(fileSessions);
             setCursorLine(found.cursorLine);
             setCursorCh(found.cursorCh);
             setOpenFileContent(found.content);

@@ -20,7 +20,7 @@ const FileInfo = (props) => {
     <StyledWrapper>
       <Box height={TAB_HEIGHT} display="flex">
         <Typography variant="body2">
-          {line}:{ch}
+          {line + 1}:{ch + 1}
         </Typography>
 
         <Typography variant="body2">{uri}</Typography>

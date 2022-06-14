@@ -13,7 +13,6 @@ import './App.css';
 import theme from './theme/theme';
 import {
   patchFileSessionsAction,
-  setFileSessionsAction,
   triggerEditorRefreshAction,
   updateOpenFileUriAction,
   updateSettingsAction,
@@ -23,7 +22,6 @@ import {
   ENTER_FULL_SCREEN,
   INIT,
   LEAVE_FULL_SCREEN,
-  EDITOR_REFRESH,
   defaultFileExplorerWidth,
   defaultOpenFileUri,
   defaultFileSessions,
@@ -124,10 +122,6 @@ const Main = () => {
       }
     );
   }, []);
-
-  useEffect(() => {
-    setFileSessionsAction(fileSessions);
-  }, [fileSessions, cursorLine, cursorCh]);
 
   // when openFileUri changes, refresh the editor
   useEffect(() => {
