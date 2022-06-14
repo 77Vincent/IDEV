@@ -38,8 +38,10 @@ function listener(win) {
   main.on(INIT, async (event) => {
     const { fileSessions } = freshFileSessions();
     const { openFileUri } = getOpenFileUri();
-    const { fileExplorerWidth } = getSettings();
-    const isFullScreen = win.isFullScreen();
+    const { fileExplorerWidth, isFullScreen } = getSettings();
+    if (isFullScreen) {
+      win.setFullScreen(true);
+    }
     event.reply(INIT, {
       // file sessions
       fileSessions,

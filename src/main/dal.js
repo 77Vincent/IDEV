@@ -25,6 +25,7 @@ const defaultOpenFileUri = {
 
 const defaultSettings = {
   fileExplorerWidth: 200,
+  isFullScreen: false,
 };
 
 const storageSet = promisify(storage.set);

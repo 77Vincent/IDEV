@@ -133,8 +133,9 @@ const Main = () => {
   useEffect(() => {
     updateSettingsAction({
       fileExplorerWidth,
+      isFullScreen,
     });
-  }, [fileExplorerWidth]);
+  }, [fileExplorerWidth, isFullScreen]);
 
   const Title = () => {
     return (
