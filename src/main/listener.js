@@ -16,27 +16,28 @@ import {
   getOpenFileUri,
   getFileSessionsLatest,
   patchFileSessions,
+  setFileSessions,
 } from './dal';
 
 function listener(win) {
-  main.on(EDITOR_REFRESH, async (event) => {
+  main.on(EDITOR_REFRESH, (event) => {
     event.reply(EDITOR_REFRESH);
   });
 
-  main.on(UPDATE_OPEN_FILE_URI, async (event, payload) => {
+  main.on(UPDATE_OPEN_FILE_URI, (event, payload) => {
     setOpenFileUri(payload);
   });
 
-  main.on(PATCH_FILE_SESSIONS, async (event, payload) => {
+  main.on(PATCH_FILE_SESSIONS, (event, payload) => {
     patchFileSessions(payload);
   });
 
-  main.on(UPDATE_SETTINGS, async (event, payload) => {
-    await updateSettings(payload);
+  main.on(UPDATE_SETTINGS, (event, payload) => {
+    updateSettings(payload);
   });
 
-  main.on(SET_FILE_SESSIONS, async (event, payload) => {
-    console.log(222222222, payload);
+  main.on(SET_FILE_SESSIONS, (event, payload) => {
+    setFileSessions({ fileSessions: payload });
   });
 
   // when the window initiates

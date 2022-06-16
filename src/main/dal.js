@@ -45,8 +45,8 @@ export function getSettings() {
   return Object.assign(defaultSettings, res);
 }
 
-export async function updateSettings(payload = defaultSettings) {
-  return storage.set(SETTINGS, payload, (e) => {
+export function updateSettings(payload = defaultSettings) {
+  storage.set(SETTINGS, payload, (e) => {
     if (e) {
       console.log(e);
     }
