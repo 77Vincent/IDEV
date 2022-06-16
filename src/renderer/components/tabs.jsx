@@ -23,6 +23,7 @@ export default () => {
     setCursorLine,
     setCursorCh,
     setFileSessions,
+    setClosingFileMonitor,
   } = useContext(StoreContext);
 
   const Tab = (props) => {
@@ -36,6 +37,9 @@ export default () => {
         alignItems="center"
         paddingLeft={1}
         paddingRight={1}
+        onDoubleClick={() => {
+          setClosingFileMonitor((prev) => !prev);
+        }}
         onClick={() => {
           let found = null;
           // first record the current cursor position to the opening file

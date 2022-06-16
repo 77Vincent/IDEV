@@ -33,4 +33,4 @@ export const defaultSettings = {
 
 // other
 export const TITLE_SPACE = 24;
-export const TAB_HEIGHT = 28;
+export const TAB_HEIGHT = 26;

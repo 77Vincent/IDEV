@@ -70,6 +70,8 @@ const Main = () => {
     setCursorLine: (arg) => setCursorLine(arg || defaultCursorLine),
     cursorCh,
     setCursorCh: (arg) => setCursorCh(arg || defaultCursorCh),
+    // monitor
+    setClosingFileMonitor,
   };
   useEffect(() => {
     // init
