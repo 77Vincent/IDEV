@@ -10,6 +10,7 @@ export const LEAVE_FULL_SCREEN = 'LEAVE_FULL_SCREEN';
 export const TOGGLE_MAXIMIZE = 'TOGGLE_MAXIMIZE';
 export const UPDATE_SETTINGS = 'UPDATE_SETTINGS';
 export const GET_FILE_CONTENT = 'GET_FILE_CONTENT';
+export const CLOSE_FILE_SESSION = 'CLOSE_FILE_SESSION';
 
 // default state
 export const defaultCursorLine = 0;

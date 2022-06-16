@@ -29,6 +29,7 @@ import {
   defaultCursorLine,
   defaultCursorCh,
   TITLE_SPACE,
+  CLOSE_FILE_SESSION,
 } from '../common/consts';
 
 const Wrapper = styled('div')`
@@ -45,6 +46,7 @@ const Main = () => {
   const [fileExplorerWidth, setFileExplorerWidth] = useState(
     defaultFileExplorerWidth
   );
+  const [closingFileMonitor, setClosingFileMonitor] = useState(false);
   const [openFileUri, setOpenFileUri] = useState(defaultOpenFileUri);
   const [fileSessions, setFileSessions] = useState(defaultFileSessions);
   const [isFullScreen, setIsFullScreen] = useState(defaultIsFullScreen);
@@ -83,6 +85,9 @@ const Main = () => {
       setFileSessions(fss);
       setOpenFileUri(ofu);
     });
+    window.electron.ipcRenderer.on(CLOSE_FILE_SESSION, () => {
+      setClosingFileMonitor((prev) => !prev);
+    });
 
     window.electron.ipcRenderer.on(ENTER_FULL_SCREEN, () => {
       setIsFullScreen(true);
@@ -103,6 +108,32 @@ const Main = () => {
       }
     );
   }, []);
+
+  // monitoring of closing file event
+  useEffect(() => {
+    // return if there is no new file opened
+    if (!openFileUri) {
+      return;
+    }
+    const len = fileSessions.length;
+    let newOpenFileUri = '';
+    let j = 0;
+    for (let i = 0; i < len; i += 1) {
+      const v = fileSessions[i];
+      if (v.uri === openFileUri) {
+        fileSessions.splice(i, 1);
+        j = i;
+        break;
+      }
+    }
+    // load the sibling file only when there were more than 1 file before
+    if (len > 1) {
+      j = j === len - 1 ? j - 1 : j;
+      newOpenFileUri = fileSessions[j].uri;
+    }
+    setFileSessions(fileSessions);
+    setOpenFileUri(newOpenFileUri);
+  }, [closingFileMonitor]);
 
   // when openFileUri changes, refresh the editor
   useEffect(() => {
