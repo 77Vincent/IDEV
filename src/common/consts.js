@@ -18,7 +18,6 @@ export const defaultIsFullScreen = false;
 export const defaultFileExplorerWidth = 200;
 export const defaultFileSessions = [];
 export const defaultOpenFileUri = '';
-export const defaultOpenFileContent = '';
 export const defaultFileSession = {
   uri: '',
   name: '',

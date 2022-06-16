@@ -28,7 +28,6 @@ import {
   defaultIsFullScreen,
   defaultCursorLine,
   defaultCursorCh,
-  defaultOpenFileContent,
   TITLE_SPACE,
 } from '../common/consts';
 
