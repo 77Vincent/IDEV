@@ -28,8 +28,14 @@ export function leaveFullScreen(win) {
 }
 
 export function closeOpenFileSession(win) {
-  const { fileSessions: fss } = getFileSessions();
   const { openFileUri } = getOpenFileUri();
+  // if there is no open file, abort
+  if (!openFileUri) {
+    return win.webContents.send(SET_FILE_SESSIONS, {
+      abort: true,
+    });
+  }
+  const { fileSessions: fss } = getFileSessions();
   const len = fss.length;
   let newOpenFileUri = '';
   let j = 0;
@@ -50,7 +56,7 @@ export function closeOpenFileSession(win) {
   setFileSessions({ fileSessions: fss });
   setOpenFileUri({ openFileUri: newOpenFileUri });
   // update renderer
-  win.webContents.send(SET_FILE_SESSIONS, {
+  return win.webContents.send(SET_FILE_SESSIONS, {
     fileSessions: fss,
     openFileUri: newOpenFileUri,
   });

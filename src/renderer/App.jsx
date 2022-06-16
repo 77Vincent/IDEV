@@ -112,21 +112,25 @@ const Main = () => {
 
     window.electron.ipcRenderer.on(
       SET_FILE_SESSIONS,
-      ({ fileSessions: fss, openFileUri: ofu }) => {
+      ({ fileSessions: fss, openFileUri: ofu, abort }) => {
+        if (abort) {
+          return;
+        }
         setFileSessions(fss);
         const found = fss.find((v) => v.uri === ofu) || {};
+        setOpenFileContent(found.content || '');
+        setCursorLine(found.cursorLine || 0);
+        setCursorCh(found.cursorCh || 0);
+        // has to be the last one to trigger the refresh
         setOpenFileUri(ofu);
-        setOpenFileContent(found.content);
-        setCursorLine(found.cursorLine);
-        setCursorCh(found.cursorCh);
       }
     );
   }, []);
 
   // when openFileUri changes, refresh the editor
   useEffect(() => {
+    triggerEditorRefreshAction();
     if (openFileUri !== '') {
-      triggerEditorRefreshAction();
       updateOpenFileUriAction({ openFileUri });
     }
   }, [openFileUri]);
