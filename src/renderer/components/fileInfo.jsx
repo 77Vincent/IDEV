@@ -1,7 +1,10 @@
 import { Box, styled, Typography } from '@mui/material';
 import PT from 'prop-types';
+import { useContext } from 'react';
+
 import { Wrapper } from './common';
 import { TAB_HEIGHT } from '../../common/consts';
+import StoreContext from '../context';
 
 const StyledWrapper = styled(Wrapper)`
   border-top-width: 1px;
@@ -10,20 +13,17 @@ const StyledWrapper = styled(Wrapper)`
   bottom: 0;
 `;
 
-const FileInfo = (props) => {
-  const {
-    uri,
-    pos: { line, ch },
-  } = props;
+const FileInfo = () => {
+  const { openFileUri, cursorLine, cursorCh } = useContext(StoreContext);
 
   return (
     <StyledWrapper>
       <Box height={TAB_HEIGHT} display="flex">
         <Typography variant="body2">
-          {line + 1}:{ch + 1}
+          {cursorLine + 1}:{cursorCh + 1}
         </Typography>
 
-        <Typography variant="body2">{uri}</Typography>
+        <Typography variant="body2">{openFileUri}</Typography>
       </Box>
     </StyledWrapper>
   );

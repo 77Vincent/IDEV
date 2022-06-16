@@ -89,8 +89,6 @@ export default class Editor extends React.Component {
   }
 
   render() {
-    const { openFileUri, cursorLine, cursorCh } = this.context;
-
     return (
       <StoreContext.Consumer>
         {({ fileExplorerWidth }) => (
@@ -107,10 +105,7 @@ export default class Editor extends React.Component {
                 }}
               />
             </TextareaWrapper>
-            <FileInfo
-              uri={openFileUri}
-              pos={{ line: cursorLine, ch: cursorCh }}
-            />
+            <FileInfo />
           </Box>
         )}
       </StoreContext.Consumer>
