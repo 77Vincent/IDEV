@@ -22,7 +22,6 @@ export default () => {
     setOpenFileUri,
     setCursorLine,
     setCursorCh,
-    setOpenFileContent,
     setFileSessions,
   } = useContext(StoreContext);
 
@@ -57,7 +56,6 @@ export default () => {
             setFileSessions(fileSessions);
             setCursorLine(found.cursorLine);
             setCursorCh(found.cursorCh);
-            setOpenFileContent(found.content);
             setOpenFileUri(uri);
           }
         }}

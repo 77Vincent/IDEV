@@ -47,9 +47,6 @@ const Main = () => {
     defaultFileExplorerWidth
   );
   const [openFileUri, setOpenFileUri] = useState(defaultOpenFileUri);
-  const [openFileContent, setOpenFileContent] = useState(
-    defaultOpenFileContent
-  );
   const [fileSessions, setFileSessions] = useState(defaultFileSessions);
   const [isFullScreen, setIsFullScreen] = useState(defaultIsFullScreen);
   const [cursorLine, setCursorLine] = useState(defaultCursorLine);
@@ -64,12 +61,8 @@ const Main = () => {
     // file sessions
     fileSessions,
     setFileSessions: (arg) => setFileSessions(arg || defaultFileSessions),
-    // open file
     openFileUri,
     setOpenFileUri: (arg) => setOpenFileUri(arg || defaultOpenFileUri),
-    openFileContent,
-    setOpenFileContent: (arg) =>
-      setOpenFileContent(arg || defaultOpenFileContent),
     // cursor
     cursorLine,
     setCursorLine: (arg) => setCursorLine(arg || defaultCursorLine),
@@ -86,21 +79,10 @@ const Main = () => {
         isFullScreen: ifs,
         fileExplorerWidth: few,
       } = payload;
-      setFileSessions(fss);
-      setOpenFileUri(ofu);
       setIsFullScreen(ifs);
       setFileExplorerWidth(few);
-
-      // set dependent values
-      for (let i = 0; i < fss.length; i += 1) {
-        const v = fss[i];
-        if (v.uri === ofu) {
-          setOpenFileContent(v.content);
-          setCursorLine(v.cursorLine);
-          setCursorCh(v.cursorCh);
-          break;
-        }
-      }
+      setFileSessions(fss);
+      setOpenFileUri(ofu);
     });
 
     window.electron.ipcRenderer.on(ENTER_FULL_SCREEN, () => {
@@ -117,10 +99,6 @@ const Main = () => {
           return;
         }
         setFileSessions(fss);
-        const found = fss.find((v) => v.uri === ofu) || {};
-        setOpenFileContent(found.content || '');
-        setCursorLine(found.cursorLine || 0);
-        setCursorCh(found.cursorCh || 0);
         // has to be the last one to trigger the refresh
         setOpenFileUri(ofu);
       }

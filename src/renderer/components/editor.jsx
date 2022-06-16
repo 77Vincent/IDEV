@@ -58,9 +58,28 @@ export default class Editor extends React.Component {
     });
 
     window.electron.ipcRenderer.on(EDITOR_REFRESH, () => {
-      const { openFileContent, cursorLine, cursorCh } = this.context;
-      editor.focus();
-      editor.setValue(openFileContent || '');
+      const {
+        openFileUri: ofu,
+        fileSessions: fss,
+        setCursorLine,
+        setCursorCh,
+      } = this.context;
+      let found = {};
+
+      for (let i = 0; i < fss.length; i += 1) {
+        const v = fss[i];
+        // found the file
+        if (v.uri === ofu) {
+          editor.focus();
+          found = v;
+          break;
+        }
+      }
+
+      const { cursorLine, cursorCh, content } = found;
+      setCursorLine(cursorLine);
+      setCursorCh(cursorCh);
+      editor.setValue(content || '');
       editor.setCursor({ line: cursorLine || 0, ch: cursorCh || 0 });
     });
 
