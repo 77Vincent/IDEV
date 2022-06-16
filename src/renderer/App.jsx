@@ -13,6 +13,7 @@ import './App.css';
 import theme from './theme/theme';
 import {
   patchFileSessionsAction,
+  setFileSessionsAction,
   triggerEditorRefreshAction,
   updateOpenFileUriAction,
   updateSettingsAction,
@@ -131,6 +132,7 @@ const Main = () => {
       j = j === len - 1 ? j - 1 : j;
       newOpenFileUri = fileSessions[j].uri;
     }
+    setFileSessionsAction(fileSessions);
     setFileSessions(fileSessions);
     setOpenFileUri(newOpenFileUri);
   }, [closingFileMonitor]);

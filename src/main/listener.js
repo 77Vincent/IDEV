@@ -7,6 +7,7 @@ import {
   UPDATE_SETTINGS,
   TOGGLE_MAXIMIZE,
   PATCH_FILE_SESSIONS,
+  SET_FILE_SESSIONS,
 } from '../common/consts';
 import {
   updateSettings,
@@ -32,6 +33,10 @@ function listener(win) {
 
   main.on(UPDATE_SETTINGS, async (event, payload) => {
     await updateSettings(payload);
+  });
+
+  main.on(SET_FILE_SESSIONS, async (event, payload) => {
+    console.log(222222222, payload);
   });
 
   // when the window initiates

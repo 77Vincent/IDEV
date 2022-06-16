@@ -1,10 +1,4 @@
-import {
-  getFileSessions,
-  getOpenFileUri,
-  openFileSession,
-  setFileSessions,
-  setOpenFileUri,
-} from './dal';
+import { openFileSession } from './dal';
 import {
   EDITOR_REFRESH,
   ENTER_FULL_SCREEN,
@@ -29,34 +23,6 @@ export function leaveFullScreen(win) {
 }
 
 export function closeOpenFileSession(win) {
-  // const { openFileUri } = getOpenFileUri();
-  // // if there is no open file, abort
-  // if (!openFileUri) {
-  //   return win.webContents.send(SET_FILE_SESSIONS, {
-  //     abort: true,
-  //   });
-  // }
-  // const { fileSessions: fss } = getFileSessions();
-  // const len = fss.length;
-  // let newOpenFileUri = '';
-  // let j = 0;
-  // for (let i = 0; i < len; i += 1) {
-  //   const v = fss[i];
-  //   if (v.uri === openFileUri) {
-  //     fss.splice(i, 1);
-  //     j = i;
-  //     break;
-  //   }
-  // }
-  // // load the sibling file only when there were more than 1 file before
-  // if (len > 1) {
-  //   j = j === len - 1 ? j - 1 : j;
-  //   newOpenFileUri = fss[j].uri;
-  // }
-  // // update local storage
-  // setFileSessions({ fileSessions: fss });
-  // setOpenFileUri({ openFileUri: newOpenFileUri });
-  // // update renderer
   win.webContents.send(CLOSE_FILE_SESSION);
 }
 
@@ -117,7 +83,7 @@ export async function openFiles(
 ) {
   // update local storage
   const { uri: openFileUri } = payload;
-  const { fileSessions } = await openFileSession(payload);
+  const { fileSessions } = openFileSession(payload);
   // update renderer
   win.webContents.send(SET_FILE_SESSIONS, { fileSessions, openFileUri });
   win.webContents.send(EDITOR_REFRESH);

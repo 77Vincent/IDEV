@@ -30,7 +30,7 @@ export function getFileSessionsLatest() {
     }
   });
   if (changed) {
-    setFileSessions(fileSessions);
+    setFileSessions({ fileSessions });
   }
   return { fileSessions };
 }
@@ -74,7 +74,7 @@ export function patchFileSessions(payload = defaultFileSession) {
 
 // insert file session if not exists
 // and only updating the openFileUri if no new file is opened
-export async function openFileSession(payload = defaultFileSession) {
+export function openFileSession(payload = defaultFileSession) {
   const { uri } = payload;
   const { fileSessions } = getFileSessions();
   // edge case, return if uri is zero value
