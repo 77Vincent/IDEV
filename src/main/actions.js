@@ -42,43 +42,6 @@ export function fileSessionsNavigate(win, next = true) {
   } else {
     win.webContents.send(PREVIOUS_FILE);
   }
-  // const { fileSessions: fss } = getFileSessions();
-  // const len = fss.length;
-  // let uri = '';
-  // let j = 0;
-  // for (let i = 0; i < len; i += 1) {
-  //   const v = fss[i];
-  //   if (v.open === true) {
-  //     // goto next file
-  //     if (next) {
-  //       if (i !== len - 1) {
-  //         v.open = false;
-  //         j = i + 1;
-  //         fss[j].open = true;
-  //         uri = fss[j].uri;
-  //       }
-  //       break;
-  //     }
-  //     // goto previous file
-  //     if (i !== 0) {
-  //       v.open = false;
-  //       j = i - 1;
-  //       fss[j].open = true;
-  //       uri = fss[j].uri;
-  //     }
-  //     break;
-  //   }
-  // }
-  // only update when there is new file to be opened
-  // win.webContents.send(EDITOR_REFRESH, fss[j]);
-  // win.webContents.send(SET_FILE_SESSIONS, { fileSessions: fss });
-  // if (uri) {
-  //   try {
-  //     debouncedSetFileSessions({ fileSessions: fss });
-  //   } catch (e) {
-  //     return Promise.reject(e);
-  //   }
-  // }
 }
 
 function _editorFocus(win) {

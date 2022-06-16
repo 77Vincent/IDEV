@@ -72,14 +72,14 @@ export default () => {
     );
   };
 
-  const StyledTab = styled(Tab)`
-    &:hover: {
-      background-color: ${({ theme }) => theme.palette.grey[800]};
-    }
+  const StyledBox = styled('div')`
     cursor: pointer;
+    &:hover: {
+      background-color: ${({ theme }) => theme.palette.grey[300]};
+    }
   `;
 
-  const ActiveTab = styled(StyledTab)`
+  const ActiveTab = styled(Tab)`
     background-color: ${({ theme }) => theme.palette.grey[600]};
     color: white;
     font-weight: 400;
@@ -94,13 +94,13 @@ export default () => {
       <Box display="flex">
         {fileSessions.map(({ uri, name }) => {
           return (
-            <Box key={uri}>
+            <StyledBox key={uri}>
               {uri === openFileUri ? (
                 <ActiveTab uri={uri} name={name} />
               ) : (
-                <StyledTab uri={uri} name={name} />
+                <Tab uri={uri} name={name} />
               )}
-            </Box>
+            </StyledBox>
           );
         })}
       </Box>
