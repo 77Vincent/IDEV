@@ -12,11 +12,12 @@ import { basename } from 'path';
 import { isDir } from './util';
 import {
   closeOpenFileSession,
-  debouncedEditorFocus,
-  debouncedNextFile,
-  debouncedPreviousFile,
+  editorFocus,
+  fileSessionsNavigate,
   getFileContent,
+  nextFile,
   openFiles,
+  previousFile,
 } from './actions';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
@@ -197,21 +198,21 @@ export default class MenuBuilder {
           label: 'Previous File',
           accelerator: 'Shift+Command+[',
           click: () => {
-            debouncedPreviousFile(win);
+            fileSessionsNavigate(win, false);
           },
         },
         {
           label: 'Next File',
           accelerator: 'Shift+Command+]',
           click: () => {
-            debouncedNextFile(win);
+            fileSessionsNavigate(win, true);
           },
         },
         {
           label: 'Focus Editor',
           accelerator: 'Esc',
           click: () => {
-            debouncedEditorFocus(win);
+            editorFocus(win);
           },
         },
       ],

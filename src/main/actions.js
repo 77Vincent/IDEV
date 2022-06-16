@@ -7,6 +7,8 @@ import {
   SET_FILE_SESSIONS,
   GET_FILE_CONTENT,
   CLOSE_FILE_SESSION,
+  NEXT_FILE,
+  PREVIOUS_FILE,
 } from '../common/consts';
 import { debounce } from '../common/util';
 
@@ -26,7 +28,20 @@ export function closeOpenFileSession(win) {
   win.webContents.send(CLOSE_FILE_SESSION);
 }
 
-async function fileSessionsNavigate(win, next = true) {
+export function nextFile(win) {
+  win.webContents.send(NEXT_FILE);
+}
+
+export function previousFile(win) {
+  win.webContents.send(PREVIOUS_FILE);
+}
+
+export function fileSessionsNavigate(win, next = true) {
+  if (next) {
+    win.webContents.send(NEXT_FILE);
+  } else {
+    win.webContents.send(PREVIOUS_FILE);
+  }
   // const { fileSessions: fss } = getFileSessions();
   // const len = fss.length;
   // let uri = '';
@@ -64,18 +79,13 @@ async function fileSessionsNavigate(win, next = true) {
   //     return Promise.reject(e);
   //   }
   // }
-  return Promise.resolve();
 }
 
-export function editorFocus(win) {
+function _editorFocus(win) {
   win.webContents.send(EDITOR_FOCUS);
 }
 
-export const debouncedPreviousFile = debounce((win) =>
-  fileSessionsNavigate(win, false)
-);
-export const debouncedNextFile = debounce((win) => fileSessionsNavigate(win));
-export const debouncedEditorFocus = debounce((win) => editorFocus(win));
+export const editorFocus = debounce((win) => _editorFocus(win));
 
 export async function openFiles(
   win,

@@ -31,6 +31,8 @@ import {
   defaultCursorCh,
   TITLE_SPACE,
   CLOSE_FILE_SESSION,
+  NEXT_FILE,
+  PREVIOUS_FILE,
 } from '../common/consts';
 
 const Wrapper = styled('div')`
@@ -48,6 +50,8 @@ const Main = () => {
     defaultFileExplorerWidth
   );
   const [closingFileMonitor, setClosingFileMonitor] = useState(false);
+  const [nextFileMonitor, setNextFileMonitor] = useState(false);
+  const [prevFileMonitor, setPrevFileMonitor] = useState(false);
   const [openFileUri, setOpenFileUri] = useState(defaultOpenFileUri);
   const [fileSessions, setFileSessions] = useState(defaultFileSessions);
   const [isFullScreen, setIsFullScreen] = useState(defaultIsFullScreen);
@@ -99,6 +103,13 @@ const Main = () => {
       setIsFullScreen(false);
     });
 
+    window.electron.ipcRenderer.on(PREVIOUS_FILE, () => {
+      setPrevFileMonitor((prev) => !prev);
+    });
+    window.electron.ipcRenderer.on(NEXT_FILE, () => {
+      setNextFileMonitor((prev) => !prev);
+    });
+
     window.electron.ipcRenderer.on(
       SET_FILE_SESSIONS,
       ({ fileSessions: fss, openFileUri: ofu, abort }) => {
@@ -111,6 +122,43 @@ const Main = () => {
       }
     );
   }, []);
+
+  // goto next file
+  useEffect(() => {
+    const len = fileSessions.length;
+    let uri = '';
+    let j = 0;
+    for (let i = 0; i < len; i += 1) {
+      const v = fileSessions[i];
+      if (v.uri === openFileUri) {
+        // goto next file
+        if (i !== len - 1) {
+          j = i + 1;
+          uri = fileSessions[j].uri;
+          setOpenFileUri(uri);
+        }
+        break;
+      }
+    }
+  }, [nextFileMonitor]);
+
+  useEffect(() => {
+    const len = fileSessions.length;
+    let uri = '';
+    let j = 0;
+    for (let i = 0; i < len; i += 1) {
+      const v = fileSessions[i];
+      if (v.uri === openFileUri) {
+        // goto previous file
+        if (i !== 0) {
+          j = i - 1;
+          uri = fileSessions[j].uri;
+          setOpenFileUri(uri);
+        }
+        break;
+      }
+    }
+  }, [prevFileMonitor]);
 
   // monitoring of closing file event
   useEffect(() => {
