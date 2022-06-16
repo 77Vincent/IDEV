@@ -16,7 +16,7 @@ const Title = () => {
         window.electron.ipcRenderer.send(TOGGLE_MAXIMIZE, {})
       }
     >
-      <Typography fontWeight={700} variant="body2">
+      <Typography fontWeight={700} variant="body1">
         Vimer
       </Typography>
     </TitleWrapper>

@@ -11,3 +11,11 @@ export const Wrapper = styled('div')(({ theme }) => {
     height: TAB_HEIGHT,
   };
 });
+
+export const VerticalDivider = styled('div')`
+  height: 65%;
+  width: 1px;
+  background-color: ${({ theme }) => theme.palette.grey[700]};
+  margin-right: 8px;
+  margin-left: 8px;
+`;

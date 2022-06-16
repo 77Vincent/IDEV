@@ -12,5 +12,11 @@ export default createTheme({
     },
   },
   typography: {
+    body1: {
+      fontSize: 14,
+    },
+    body2: {
+      fontSize: 12,
+    },
   },
 });

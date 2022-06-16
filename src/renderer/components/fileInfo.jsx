@@ -1,15 +1,16 @@
-import { Box, styled, Typography } from '@mui/material';
-import PT from 'prop-types';
+import { Box, styled, Tooltip, Typography } from '@mui/material';
 import { useContext } from 'react';
 
-import { Wrapper } from './common';
+import { VerticalDivider, Wrapper } from './common';
 import { TAB_HEIGHT } from '../../common/consts';
 import StoreContext from '../context';
+import { textCutter } from '../../common/util';
 
 const StyledWrapper = styled(Wrapper)`
   border-top-width: 1px;
   border-top-style: solid;
   border-top-color: ${({ theme }) => theme.palette.grey[800]};
+  color: ${({ theme }) => theme.palette.grey[400]};
   bottom: 0;
 `;
 
@@ -18,31 +19,32 @@ const FileInfo = () => {
 
   return (
     <StyledWrapper>
-      <Box height={TAB_HEIGHT} display="flex">
-        <Typography variant="body2">
-          {cursorLine + 1}:{cursorCh + 1}
-        </Typography>
+      <Box
+        paddingRight={1}
+        paddingLeft={1}
+        height={TAB_HEIGHT}
+        justifyContent="space-between"
+        display="flex"
+      >
+        <Box alignItems="center" height="100%" display="flex">
+          <Tooltip title="cursor position">
+            <Typography variant="body2">
+              {cursorLine + 1}:{cursorCh + 1}
+            </Typography>
+          </Tooltip>
+          <VerticalDivider />
+        </Box>
 
-        <Typography variant="body2">{openFileUri}</Typography>
+        <Box display="flex" alignItems="center">
+          <Tooltip title={openFileUri}>
+            <Typography variant="body2">
+              {textCutter(openFileUri, 30)}
+            </Typography>
+          </Tooltip>
+        </Box>
       </Box>
     </StyledWrapper>
   );
-};
-
-FileInfo.propTypes = {
-  uri: PT.string,
-  pos: PT.exact({
-    line: PT.number,
-    ch: PT.number,
-  }),
-};
-
-FileInfo.defaultProps = {
-  uri: '',
-  pos: {
-    line: 0,
-    ch: 0,
-  },
 };
 
 export default FileInfo;

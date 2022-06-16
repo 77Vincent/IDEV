@@ -65,7 +65,7 @@ export default () => {
         }}
         {...props}
       >
-        <Typography fontWeight="inherit" variant="body2">
+        <Typography fontWeight="inherit" variant="body1">
           {name}
         </Typography>
       </Box>
