@@ -5,6 +5,9 @@ import 'codemirror/addon/edit/closebrackets';
 import 'codemirror/addon/edit/matchbrackets';
 import 'codemirror/addon/edit/closetag';
 import 'codemirror/addon/edit/matchtags';
+import 'codemirror/addon/hint/show-hint';
+import 'codemirror/addon/hint/javascript-hint';
+import 'codemirror/addon/hint/show-hint.css';
 import 'codemirror/addon/comment/comment';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/jsx/jsx';
@@ -15,7 +18,11 @@ import '../theme/editor-dark.css';
 import FileInfo from './fileInfo';
 import Tabs from './tabs';
 import StoreContext from '../context';
-import { EDITOR_FOCUS, EDITOR_REFRESH } from '../../common/consts';
+import {
+  EDITOR_FOCUS,
+  EDITOR_REFRESH,
+  VIM_MODE_MAP,
+} from '../../common/consts';
 
 const TextareaWrapper = styled('div')`
   position: absolute;
@@ -28,11 +35,14 @@ export default class Editor extends React.Component {
   constructor(props) {
     super(props);
     this.textareaNode = React.createRef();
+    this.state = {
+      mode: VIM_MODE_MAP.normal,
+    };
   }
 
   componentDidMount() {
     const editor = CodeMirror.fromTextArea(this.textareaNode, {
-      mode: 'jsx',
+      mode: 'text/jsx',
       lineNumbers: true,
       theme: 'darcula',
       autofocus: true,
@@ -50,11 +60,21 @@ export default class Editor extends React.Component {
       },
     });
     editor.setSize('100%', '100%');
+    editor.on('vim-mode-change', ({ mode }) => {
+      this.setState({ mode });
+    });
     editor.on('cursorActivity', (cm) => {
       const { setCursorLine, setCursorCh } = this.context;
       const { line, ch } = cm.getCursor();
+      const { mode } = this.state;
       setCursorLine(line);
       setCursorCh(ch);
+
+      if (mode === VIM_MODE_MAP.insert) {
+        editor.showHint({
+          completeSingle: false,
+        });
+      }
     });
 
     window.electron.ipcRenderer.on(EDITOR_REFRESH, () => {
