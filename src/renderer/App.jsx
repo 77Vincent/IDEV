@@ -131,6 +131,11 @@ const Main = () => {
     for (let i = 0; i < len; i += 1) {
       const v = fileSessions[i];
       if (v.uri === openFileUri) {
+        v.cursorLine = cursorLine;
+        v.cursorCh = cursorCh;
+        setFileSessions(fileSessions);
+        setCursorLine(cursorLine);
+        setCursorCh(cursorCh);
         // goto next file
         if (i !== len - 1) {
           j = i + 1;
@@ -149,6 +154,11 @@ const Main = () => {
     for (let i = 0; i < len; i += 1) {
       const v = fileSessions[i];
       if (v.uri === openFileUri) {
+        v.cursorLine = cursorLine;
+        v.cursorCh = cursorCh;
+        setFileSessions(fileSessions);
+        setCursorLine(cursorLine);
+        setCursorCh(cursorCh);
         // goto previous file
         if (i !== 0) {
           j = i - 1;
