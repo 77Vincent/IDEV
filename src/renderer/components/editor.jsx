@@ -1,17 +1,26 @@
 import * as React from 'react';
 import { Box, styled } from '@mui/material';
 import CodeMirror from 'codemirror';
+
 import 'codemirror/addon/edit/closebrackets';
 import 'codemirror/addon/edit/matchbrackets';
 import 'codemirror/addon/edit/closetag';
 import 'codemirror/addon/edit/matchtags';
 import 'codemirror/addon/hint/show-hint';
 import 'codemirror/addon/hint/javascript-hint';
-import 'codemirror/addon/hint/show-hint.css';
 import 'codemirror/addon/comment/comment';
+import 'codemirror/addon/search/search';
+import 'codemirror/addon/search/match-highlighter';
+import 'codemirror/addon/search/searchcursor';
+import 'codemirror/addon/search/jump-to-line';
+import 'codemirror/addon/dialog/dialog';
 import 'codemirror/addon/selection/active-line';
+
 import 'codemirror/mode/jsx/jsx';
 import 'codemirror/keymap/vim';
+
+import 'codemirror/addon/hint/show-hint.css';
+import 'codemirror/addon/dialog/dialog.css';
 
 import '../theme/codemirror.css';
 import '../theme/editor-dark.css';
@@ -53,9 +62,16 @@ export default class Editor extends React.Component {
       cursorScrollMargin: 50,
       styleActiveLine: true,
       value: '',
+      highlightSelectionMatches: true,
       extraKeys: {
         'Cmd-/': (cm) => {
           cm.execCommand('toggleComment');
+        },
+        'Cmd-F': (cm) => {
+          cm.execCommand('find');
+        },
+        '/': (cm) => {
+          cm.execCommand('find');
         },
       },
     });
@@ -72,6 +88,17 @@ export default class Editor extends React.Component {
 
       if (mode === VIM_MODE_MAP.insert) {
         editor.showHint({
+          // hin() {
+          //   const token = cm.getTokenAt({ line, ch });
+          //   console.log(22222222, token)
+          //   const start = token.start;
+          //   const end = ch;
+          //   const currentWord = token.string;
+          //   return {
+          //     from: CodeMirror.Pos(line, start),
+          //     to: CodeMirror.Pos(line, end),
+          //   };
+          // },
           completeSingle: false,
         });
       }

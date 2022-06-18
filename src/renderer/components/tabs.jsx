@@ -81,6 +81,8 @@ export default () => {
 
   const ActiveTab = styled(Tab)`
     background-color: ${({ theme }) => theme.palette.grey[600]};
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
     color: white;
     font-weight: 400;
   `;
