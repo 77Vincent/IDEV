@@ -41,4 +41,6 @@ export const TAB_HEIGHT = 26;
 export const VIM_MODE_MAP = {
   insert: 'insert',
   normal: 'normal',
+  visual: 'visual',
+  replace: 'replace',
 };

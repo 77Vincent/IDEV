@@ -14,7 +14,7 @@ const StyledWrapper = styled(Wrapper)`
   bottom: 0;
 `;
 
-const FileInfo = () => {
+const FileInfo = ({ mode }) => {
   const { openFileUri, cursorLine, cursorCh } = useContext(StoreContext);
 
   return (
@@ -27,6 +27,8 @@ const FileInfo = () => {
         display="flex"
       >
         <Box alignItems="center" height="100%" display="flex">
+          <Typography variant="body2">{mode}</Typography>
+          <VerticalDivider />
           <Tooltip title="cursor position">
             <Typography variant="body2">
               {cursorLine + 1}:{cursorCh + 1}

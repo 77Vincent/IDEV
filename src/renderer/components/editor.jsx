@@ -50,6 +50,7 @@ export default class Editor extends React.Component {
   }
 
   componentDidMount() {
+    CodeMirror.Vim.map('nohighlight', ':noh', 'normal');
     const editor = CodeMirror.fromTextArea(this.textareaNode, {
       mode: 'text/jsx',
       lineNumbers: true,
@@ -68,10 +69,10 @@ export default class Editor extends React.Component {
           cm.execCommand('toggleComment');
         },
         'Cmd-F': (cm) => {
-          cm.execCommand('find');
+          CodeMirror.Vim.handleKey(cm, '/');
         },
-        '/': (cm) => {
-          cm.execCommand('find');
+        'Shift-Cmd-R': (cm) => {
+          cm.execCommand('replace');
         },
       },
     });
@@ -88,17 +89,6 @@ export default class Editor extends React.Component {
 
       if (mode === VIM_MODE_MAP.insert) {
         editor.showHint({
-          // hin() {
-          //   const token = cm.getTokenAt({ line, ch });
-          //   console.log(22222222, token)
-          //   const start = token.start;
-          //   const end = ch;
-          //   const currentWord = token.string;
-          //   return {
-          //     from: CodeMirror.Pos(line, start),
-          //     to: CodeMirror.Pos(line, end),
-          //   };
-          // },
           completeSingle: false,
         });
       }
@@ -132,10 +122,12 @@ export default class Editor extends React.Component {
 
     window.electron.ipcRenderer.on(EDITOR_FOCUS, () => {
       editor.focus();
+      // CodeMirror.Vim.handleKey(editor, 'nohighlight');
     });
   }
 
   render() {
+    const { mode } = this.state;
     return (
       <StoreContext.Consumer>
         {({ fileExplorerWidth }) => (
@@ -152,7 +144,7 @@ export default class Editor extends React.Component {
                 }}
               />
             </TextareaWrapper>
-            <FileInfo />
+            <FileInfo mode={mode} />
           </Box>
         )}
       </StoreContext.Consumer>
